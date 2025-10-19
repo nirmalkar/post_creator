@@ -1,27 +1,38 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Download, Layout } from "lucide-react";
 
-const PostCreator = () => {
-  const canvasRef = useRef(null);
-  const [title, setTitle] = useState("JavaScript");
-  const [content, setContent] = useState(
+type Theme = {
+  bg: string;
+  accent1: string;
+  accent2: string;
+  text: string;
+  subText: string;
+};
+type ThemeName = "dark" | "light" | "teal";
+
+const PostCreator: React.FC = () => {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [title, setTitle] = useState<string>("JavaScript");
+  const [content, setContent] = useState<string>(
     "Web APIs you probably don't know about"
   );
-  const [footer, setFooter] = useState("@YourBrand");
-  const [theme, setTheme] = useState("dark");
-  const [showNextArrow, setShowNextArrow] = useState(false);
-  const [showCodeSection, setShowCodeSection] = useState(false);
-  const [code, setCode] = useState(
+  const [footer, setFooter] = useState<string>("@YourBrand");
+  const [theme, setTheme] = useState<ThemeName>("dark");
+  const [showNextArrow, setShowNextArrow] = useState<boolean>(false);
+  const [showCodeSection, setShowCodeSection] = useState<boolean>(false);
+  const [code, setCode] = useState<string>(
     'const api = fetch("/data")\n  .then(res => res.json())'
   );
-  const [template, setTemplate] = useState("modern");
-  const [contentFontSize, setContentFontSize] = useState(40);
-  const [titleFontSize, setTitleFontSize] = useState(72);
-  const [codeBoxHeight, setCodeBoxHeight] = useState(220);
-  const [contentFontWeight, setContentFontWeight] = useState("400");
-  const [titleFontWeight, setTitleFontWeight] = useState("700");
+  const [template, setTemplate] = useState<"modern" | "minimal" | "gradient">(
+    "modern"
+  );
+  const [contentFontSize, setContentFontSize] = useState<number>(40);
+  const [titleFontSize, setTitleFontSize] = useState<number>(72);
+  const [codeBoxHeight, setCodeBoxHeight] = useState<number>(220);
+  const [contentFontWeight, setContentFontWeight] = useState<string>("400");
+  const [titleFontWeight, setTitleFontWeight] = useState<string>("700");
 
-  const themes = {
+  const themes: Record<ThemeName, Theme> = {
     dark: {
       bg: "#1a1d2e",
       accent1: "#00BFA6",
@@ -45,7 +56,12 @@ const PostCreator = () => {
     },
   };
 
-  const drawDecorativeCircles = (ctx, w, h, currentTheme) => {
+  const drawDecorativeCircles = (
+    ctx: CanvasRenderingContext2D,
+    w: number,
+    h: number,
+    currentTheme: Theme
+  ) => {
     ctx.fillStyle = currentTheme.accent1;
 
     ctx.globalAlpha = 0.12;
@@ -81,7 +97,12 @@ const PostCreator = () => {
     ctx.globalAlpha = 1;
   };
 
-  const drawNextArrow = (ctx, w, h, currentTheme) => {
+  const drawNextArrow = (
+    ctx: CanvasRenderingContext2D,
+    w: number,
+    h: number,
+    currentTheme: Theme
+  ) => {
     if (!showNextArrow) return;
 
     const arrowX = w - 100;
@@ -131,7 +152,12 @@ const PostCreator = () => {
     ctx.globalAlpha = 1;
   };
 
-  const drawModernTemplate = (ctx, w, h, currentTheme) => {
+  const drawModernTemplate = (
+    ctx: CanvasRenderingContext2D,
+    w: number,
+    h: number,
+    currentTheme: Theme
+  ) => {
     ctx.fillStyle = currentTheme.bg;
     ctx.fillRect(0, 0, w, h);
 
@@ -252,7 +278,12 @@ const PostCreator = () => {
     drawNextArrow(ctx, w, h, currentTheme);
   };
 
-  const drawMinimalTemplate = (ctx, w, h, currentTheme) => {
+  const drawMinimalTemplate = (
+    ctx: CanvasRenderingContext2D,
+    w: number,
+    h: number,
+    currentTheme: Theme
+  ) => {
     ctx.fillStyle = currentTheme.bg;
     ctx.fillRect(0, 0, w, h);
 
@@ -325,7 +356,12 @@ const PostCreator = () => {
     drawNextArrow(ctx, w, h, currentTheme);
   };
 
-  const drawGradientTemplate = (ctx, w, h, currentTheme) => {
+  const drawGradientTemplate = (
+    ctx: CanvasRenderingContext2D,
+    w: number,
+    h: number,
+    currentTheme: Theme
+  ) => {
     ctx.fillStyle = currentTheme.bg;
     ctx.fillRect(0, 0, w, h);
 
@@ -410,12 +446,17 @@ const PostCreator = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    // Ensure canvas has actual pixel size matching its attributes
+    // (the canvas element has width/height attributes already set in JSX)
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const w = canvas.width;
-    const h = canvas.height;
-    const currentTheme = themes[theme];
+    const w: number = canvas.width;
+    const h: number = canvas.height;
+    const currentTheme: Theme = themes[theme];
+
+    // Clear first (optional)
+    ctx.clearRect(0, 0, w, h);
 
     if (template === "modern") {
       drawModernTemplate(ctx, w, h, currentTheme);
@@ -426,8 +467,12 @@ const PostCreator = () => {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     drawCanvas();
+    // draw again if fonts load later — small re-draw safeguard
+    const timer = setTimeout(() => drawCanvas(), 300);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     title,
     content,
@@ -449,7 +494,7 @@ const PostCreator = () => {
     if (!canvas) return;
 
     try {
-      const image = canvas.toDataURL("image/png");
+      const image = (canvas as HTMLCanvasElement).toDataURL("image/png");
       const link = document.createElement("a");
       link.href = image;
       link.download = `instagram-post-${Date.now()}.png`;
@@ -457,6 +502,7 @@ const PostCreator = () => {
       link.click();
       document.body.removeChild(link);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error("Download failed:", error);
       alert("Failed to download image. Please try again.");
     }
@@ -508,7 +554,9 @@ const PostCreator = () => {
                 ].map((t) => (
                   <button
                     key={t.id}
-                    onClick={() => setTemplate(t.id)}
+                    onClick={() =>
+                      setTemplate(t.id as "modern" | "minimal" | "gradient")
+                    }
                     className={`w-full py-3 px-4 rounded-lg font-semibold transition-all ${
                       template === t.id
                         ? "bg-teal-500 text-white shadow-lg scale-105"
@@ -527,7 +575,7 @@ const PostCreator = () => {
                 {Object.keys(themes).map((t) => (
                   <button
                     key={t}
-                    onClick={() => setTheme(t)}
+                    onClick={() => setTheme(t as ThemeName)}
                     className={`w-full py-3 px-4 rounded-lg font-semibold transition-all ${
                       theme === t
                         ? "bg-teal-500 text-white shadow-lg"
