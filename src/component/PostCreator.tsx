@@ -225,7 +225,7 @@ const PostCreator: React.FC = () => {
     });
     if (line) ctx.fillText(line, 50, contentY);
 
-    let footerStartY = h - 130;
+    const footerStartY = h - 130;
 
     if (showCodeSection) {
       const codeBoxY = contentY + 70;
@@ -509,39 +509,23 @@ const PostCreator: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 p-8">
+    <div className="min-h-screen bg-slate-900 p-8">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
       `}</style>
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold text-white mb-2 flex items-center gap-2">
-          <Layout size={32} />
-          Post Creator
-        </h1>
-        <p className="text-gray-400 mb-8">
-          Create stunning Instagram learning content with multiple templates
-        </p>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
-            <div className="bg-slate-800 rounded-lg p-6 shadow-2xl">
-              <canvas
-                ref={canvasRef}
-                width={1080}
-                height={1350}
-                className="w-full border-4 border-slate-700 rounded-lg shadow-lg"
-              />
-              <button
-                onClick={handleDownload}
-                className="mt-6 w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition-all duration-200 transform hover:scale-105"
-              >
-                <Download size={20} />
-                Download as PNG
-              </button>
-            </div>
-          </div>
+      <h1 className="text-4xl font-bold text-white mb-2 flex items-center gap-2">
+        <Layout size={32} />
+        Post Creator
+      </h1>
+      <p className="text-gray-400 mb-8">
+        Create stunning Instagram learning content with multiple templates
+      </p>
 
-          <div className="lg:col-span-1 space-y-6 max-h-screen overflow-y-auto">
+      <div className="flex flex-col lg:flex-row gap-8">
+        {/* Controls Section - 1/3 width (now on left) */}
+        <div className="flex-1 lg:flex-none lg:w-1/3">
+          <div className="space-y-6 max-h-screen overflow-y-auto">
             <div className="bg-slate-800 rounded-lg p-6 shadow-lg border-2 border-teal-500">
               <h2 className="text-lg font-bold text-white mb-4">
                 📋 Select Template
@@ -596,10 +580,10 @@ const PostCreator: React.FC = () => {
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                maxLength={40}
+                maxLength={60}
                 className="w-full px-4 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-teal-500 focus:outline-none text-sm"
               />
-              <p className="text-xs text-gray-500 mt-1">{title.length}/40</p>
+              <p className="text-xs text-gray-500 mt-1">{title.length}/60</p>
             </div>
 
             <div className="bg-slate-800 rounded-lg p-6 shadow-lg">
@@ -774,6 +758,25 @@ const PostCreator: React.FC = () => {
                 <p className="text-xs text-gray-500 mt-1">{code.length}/300</p>
               </div>
             )}
+          </div>
+        </div>
+
+        {/* Canvas Section - 2/3 width (now on right) */}
+        <div className="flex-1 lg:flex-none lg:w-2/3">
+          <div className="bg-slate-800 rounded-lg p-6 shadow-2xl">
+            <canvas
+              ref={canvasRef}
+              width={1080}
+              height={1350}
+              className="w-full border-4 border-slate-700 rounded-lg shadow-lg"
+            />
+            <button
+              onClick={handleDownload}
+              className="mt-6 w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition-all duration-200 transform hover:scale-105"
+            >
+              <Download size={20} />
+              Download as PNG
+            </button>
           </div>
         </div>
       </div>
