@@ -1,5 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Download, Layout } from "lucide-react";
+import AppHeader from "./AppHeader";
+import PostCanvas from "./PostCanvas";
+import TemplateSelector from "./TemplateSelector";
+import ThemeSelector, { type ThemeName } from "./ThemeSelector";
+import InputControl from "./InputControl";
+import SliderControl from "./SliderControl";
+import SelectControl from "./SelectControl";
+import ToggleControl from "./ToggleControl";
 
 type Theme = {
   bg: string;
@@ -8,7 +15,6 @@ type Theme = {
   text: string;
   subText: string;
 };
-type ThemeName = "dark" | "light" | "teal";
 
 const PostCreator: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -514,270 +520,134 @@ const PostCreator: React.FC = () => {
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
       `}</style>
 
-      <h1 className="text-4xl font-bold text-white mb-2 flex items-center gap-2">
-        <Layout size={32} />
-        Post Creator
-      </h1>
-      <p className="text-gray-400 mb-8">
-        Create stunning Instagram learning content with multiple templates
-      </p>
+      <AppHeader />
 
       <div className="flex flex-col lg:flex-row gap-8">
-        {/* Controls Section - 1/3 width (now on left) */}
         <div className="flex-1 lg:flex-none lg:w-1/3">
           <div className="space-y-6 max-h-screen overflow-y-auto">
-            <div className="bg-slate-800 rounded-lg p-6 shadow-lg border-2 border-teal-500">
-              <h2 className="text-lg font-bold text-white mb-4">
-                📋 Select Template
-              </h2>
-              <div className="space-y-3">
-                {[
-                  { id: "modern", label: "Modern" },
-                  { id: "minimal", label: "Minimal" },
-                  { id: "gradient", label: "Gradient" },
-                ].map((t) => (
-                  <button
-                    key={t.id}
-                    onClick={() =>
-                      setTemplate(t.id as "modern" | "minimal" | "gradient")
-                    }
-                    className={`w-full py-3 px-4 rounded-lg font-semibold transition-all ${
-                      template === t.id
-                        ? "bg-teal-500 text-white shadow-lg scale-105"
-                        : "bg-slate-700 text-gray-300 hover:bg-slate-600"
-                    }`}
-                  >
-                    {t.label}
-                  </button>
-                ))}
-              </div>
-            </div>
+            <TemplateSelector
+              selectedTemplate={template}
+              onTemplateChange={setTemplate}
+            />
 
-            <div className="bg-slate-800 rounded-lg p-6 shadow-lg">
-              <h2 className="text-lg font-bold text-white mb-4">🎨 Theme</h2>
-              <div className="space-y-3">
-                {Object.keys(themes).map((t) => (
-                  <button
-                    key={t}
-                    onClick={() => setTheme(t as ThemeName)}
-                    className={`w-full py-3 px-4 rounded-lg font-semibold transition-all ${
-                      theme === t
-                        ? "bg-teal-500 text-white shadow-lg"
-                        : "bg-slate-700 text-gray-300 hover:bg-slate-600"
-                    }`}
-                  >
-                    {t.charAt(0).toUpperCase() + t.slice(1)}
-                  </button>
-                ))}
-              </div>
-            </div>
+            <ThemeSelector
+              selectedTheme={theme}
+              themes={themes}
+              onThemeChange={setTheme}
+            />
 
-            <div className="bg-slate-800 rounded-lg p-6 shadow-lg">
-              <label className="block text-sm font-bold text-teal-400 mb-2">
-                Main Title
-              </label>
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                maxLength={60}
-                className="w-full px-4 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-teal-500 focus:outline-none text-sm"
-              />
-              <p className="text-xs text-gray-500 mt-1">{title.length}/60</p>
-            </div>
+            <InputControl
+              label="Main Title"
+              value={title}
+              onChange={setTitle}
+              maxLength={60}
+              showCounter={true}
+            />
 
-            <div className="bg-slate-800 rounded-lg p-6 shadow-lg">
-              <label className="block text-sm font-bold text-teal-400 mb-2">
-                Title Font Size
-              </label>
-              <div className="flex items-center gap-3">
-                <input
-                  type="range"
-                  min="50"
-                  max="100"
-                  value={titleFontSize}
-                  onChange={(e) => setTitleFontSize(Number(e.target.value))}
-                  className="flex-1 h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-teal-500"
-                />
-                <span className="text-white font-bold w-12 text-center">
-                  {titleFontSize}px
-                </span>
-              </div>
-            </div>
+            <SliderControl
+              label="Title Font Size"
+              value={titleFontSize}
+              onChange={setTitleFontSize}
+              min={50}
+              max={100}
+              unit="px"
+            />
 
-            <div className="bg-slate-800 rounded-lg p-6 shadow-lg">
-              <label className="block text-sm font-bold text-teal-400 mb-2">
-                Title Font Weight
-              </label>
-              <select
-                value={titleFontWeight}
-                onChange={(e) => setTitleFontWeight(e.target.value)}
-                className="w-full px-4 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-teal-500 focus:outline-none text-sm"
-              >
-                <option value="400">Regular (400)</option>
-                <option value="600">Semi-bold (600)</option>
-                <option value="700">Bold (700)</option>
-                <option value="800">Extra Bold (800)</option>
-              </select>
-            </div>
+            <SelectControl
+              label="Title Font Weight"
+              value={titleFontWeight}
+              onChange={setTitleFontWeight}
+              options={[
+                { value: "400", label: "Regular (400)" },
+                { value: "600", label: "Semi-bold (600)" },
+                { value: "700", label: "Bold (700)" },
+                { value: "800", label: "Extra Bold (800)" },
+              ]}
+            />
 
-            <div className="bg-slate-800 rounded-lg p-6 shadow-lg">
-              <label className="block text-sm font-bold text-teal-400 mb-2">
-                Main Content
-              </label>
-              <textarea
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                maxLength={500}
-                rows={6}
-                className="w-full px-4 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-teal-500 focus:outline-none text-sm resize-none"
-              />
-              <p className="text-xs text-gray-500 mt-1">{content.length}/500</p>
-            </div>
+            <InputControl
+              label="Main Content"
+              value={content}
+              onChange={setContent}
+              maxLength={500}
+              type="textarea"
+              rows={6}
+              showCounter={true}
+            />
 
-            <div className="bg-slate-800 rounded-lg p-6 shadow-lg">
-              <label className="block text-sm font-bold text-teal-400 mb-2">
-                Content Font Size
-              </label>
-              <div className="flex items-center gap-3">
-                <input
-                  type="range"
-                  min="30"
-                  max="60"
-                  value={contentFontSize}
-                  onChange={(e) => setContentFontSize(Number(e.target.value))}
-                  className="flex-1 h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-teal-500"
-                />
-                <span className="text-white font-bold w-12 text-center">
-                  {contentFontSize}px
-                </span>
-              </div>
-            </div>
+            <SliderControl
+              label="Content Font Size"
+              value={contentFontSize}
+              onChange={setContentFontSize}
+              min={30}
+              max={60}
+              unit="px"
+            />
 
-            <div className="bg-slate-800 rounded-lg p-6 shadow-lg">
-              <label className="block text-sm font-bold text-teal-400 mb-2">
-                Content Font Weight
-              </label>
-              <select
-                value={contentFontWeight}
-                onChange={(e) => setContentFontWeight(e.target.value)}
-                className="w-full px-4 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-teal-500 focus:outline-none text-sm"
-              >
-                <option value="400">Regular (400)</option>
-                <option value="600">Semi-bold (600)</option>
-                <option value="700">Bold (700)</option>
-                <option value="800">Extra Bold (800)</option>
-              </select>
-            </div>
+            <SelectControl
+              label="Content Font Weight"
+              value={contentFontWeight}
+              onChange={setContentFontWeight}
+              options={[
+                { value: "400", label: "Regular (400)" },
+                { value: "600", label: "Semi-bold (600)" },
+                { value: "700", label: "Bold (700)" },
+                { value: "800", label: "Extra Bold (800)" },
+              ]}
+            />
 
-            <div className="bg-slate-800 rounded-lg p-6 shadow-lg">
-              <label className="block text-sm font-bold text-teal-400 mb-2">
-                Footer / Brand Name
-              </label>
-              <input
-                type="text"
-                value={footer}
-                onChange={(e) => setFooter(e.target.value)}
-                maxLength={30}
-                className="w-full px-4 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-teal-500 focus:outline-none text-sm"
-              />
-              <p className="text-xs text-gray-500 mt-1">{footer.length}/30</p>
-            </div>
+            <InputControl
+              label="Footer / Brand Name"
+              value={footer}
+              onChange={setFooter}
+              maxLength={30}
+              showCounter={true}
+            />
 
-            <div className="bg-slate-800 rounded-lg p-6 shadow-lg">
-              <label className="block text-sm font-bold text-teal-400 mb-4">
-                Show Next Arrow
-              </label>
-              <button
-                onClick={() => setShowNextArrow(!showNextArrow)}
-                className={`w-full py-3 px-4 rounded-lg font-semibold transition-all ${
-                  showNextArrow
-                    ? "bg-teal-500 text-white shadow-lg"
-                    : "bg-slate-700 text-gray-300 hover:bg-slate-600"
-                }`}
-              >
-                {showNextArrow ? "✓ Arrow Enabled" : "Arrow Disabled"}
-              </button>
-              <p className="text-xs text-gray-500 mt-2">
-                Show a next slide indicator arrow
-              </p>
-            </div>
+            <ToggleControl
+              label="Show Next Arrow"
+              isEnabled={showNextArrow}
+              onToggle={() => setShowNextArrow(!showNextArrow)}
+              description="Show a next slide indicator arrow"
+            />
 
-            <div className="bg-slate-800 rounded-lg p-6 shadow-lg">
-              <label className="block text-sm font-bold text-teal-400 mb-4">
-                Show Code Section
-              </label>
-              <button
-                onClick={() => setShowCodeSection(!showCodeSection)}
-                className={`w-full py-3 px-4 rounded-lg font-semibold transition-all ${
-                  showCodeSection
-                    ? "bg-teal-500 text-white shadow-lg"
-                    : "bg-slate-700 text-gray-300 hover:bg-slate-600"
-                }`}
-              >
-                {showCodeSection ? "✓ Code Enabled" : "Code Disabled"}
-              </button>
-              <p className="text-xs text-gray-500 mt-2">
-                Show code snippet on the image
-              </p>
-            </div>
+            <ToggleControl
+              label="Show Code Section"
+              isEnabled={showCodeSection}
+              onToggle={() => setShowCodeSection(!showCodeSection)}
+              description="Show code snippet on the image"
+            />
 
             {showCodeSection && (
-              <div className="bg-slate-800 rounded-lg p-6 shadow-lg">
-                <label className="block text-sm font-bold text-teal-400 mb-2">
-                  Code Box Height
-                </label>
-                <div className="flex items-center gap-3">
-                  <input
-                    type="range"
-                    min="150"
-                    max="350"
-                    value={codeBoxHeight}
-                    onChange={(e) => setCodeBoxHeight(Number(e.target.value))}
-                    className="flex-1 h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-teal-500"
-                  />
-                  <span className="text-white font-bold w-12 text-center">
-                    {codeBoxHeight}px
-                  </span>
-                </div>
-              </div>
+              <SliderControl
+                label="Code Box Height"
+                value={codeBoxHeight}
+                onChange={setCodeBoxHeight}
+                min={150}
+                max={350}
+                unit="px"
+              />
             )}
 
             {showCodeSection && (
-              <div className="bg-slate-800 rounded-lg p-6 shadow-lg border border-teal-500">
-                <label className="block text-sm font-bold text-teal-400 mb-2">
-                  Code Snippet
-                </label>
-                <textarea
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  maxLength={300}
-                  rows={5}
-                  className="w-full px-4 py-2 bg-slate-700 text-teal-400 rounded-lg border border-slate-600 focus:border-teal-500 focus:outline-none text-xs font-mono resize-none"
-                />
-                <p className="text-xs text-gray-500 mt-1">{code.length}/300</p>
-              </div>
+              <InputControl
+                label="Code Snippet"
+                value={code}
+                onChange={setCode}
+                maxLength={300}
+                type="textarea"
+                rows={5}
+                showCounter={true}
+              />
             )}
           </div>
         </div>
 
-        {/* Canvas Section - 2/3 width (now on right) */}
         <div className="flex-1 lg:flex-none lg:w-2/3">
-          <div className="bg-slate-800 rounded-lg p-6 shadow-2xl">
-            <canvas
-              ref={canvasRef}
-              width={1080}
-              height={1350}
-              className="w-full border-4 border-slate-700 rounded-lg shadow-lg"
-            />
-            <button
-              onClick={handleDownload}
-              className="mt-6 w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition-all duration-200 transform hover:scale-105"
-            >
-              <Download size={20} />
-              Download as PNG
-            </button>
-          </div>
+          <PostCanvas
+            canvasRef={canvasRef}
+            onDownload={handleDownload}
+          />
         </div>
       </div>
     </div>
