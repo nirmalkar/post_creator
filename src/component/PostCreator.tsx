@@ -37,6 +37,8 @@ const PostCreator: React.FC = () => {
   const [codeBoxHeight, setCodeBoxHeight] = useState<number>(220);
   const [contentFontWeight, setContentFontWeight] = useState<string>("400");
   const [titleFontWeight, setTitleFontWeight] = useState<string>("700");
+  const [titleY, setTitleY] = useState<number>(130);
+  const [contentY, setContentY] = useState<number>(250);
 
   const themes: Record<ThemeName, Theme> = {
     dark: {
@@ -192,21 +194,21 @@ const PostCreator: React.FC = () => {
     const titleMaxWidth = w - 100;
     const titleWords = title.split(" ");
     let titleLine = "";
-    let titleY = 130;
+    let titleCurrentY = titleY;
 
     titleWords.forEach((word) => {
       const testLine = titleLine + (titleLine ? " " : "") + word;
       const metrics = ctx.measureText(testLine);
 
       if (metrics.width > titleMaxWidth && titleLine) {
-        ctx.fillText(titleLine, 50, titleY);
+        ctx.fillText(titleLine, 50, titleCurrentY);
         titleLine = word;
-        titleY += 85;
+        titleCurrentY += 85;
       } else {
         titleLine = testLine;
       }
     });
-    if (titleLine) ctx.fillText(titleLine, 50, titleY);
+    if (titleLine) ctx.fillText(titleLine, 50, titleCurrentY);
 
     ctx.fillStyle = currentTheme.text;
     ctx.font = `${contentFontWeight} ${contentFontSize}px Poppins, sans-serif`;
@@ -215,26 +217,26 @@ const PostCreator: React.FC = () => {
     const contentMaxWidth = w - 100;
     const words = content.split(" ");
     let line = "";
-    let contentY = h * 0.25;
+    let contentCurrentY = contentY;
 
     words.forEach((word) => {
       const testLine = line + (line ? " " : "") + word;
       const metrics = ctx.measureText(testLine);
 
       if (metrics.width > contentMaxWidth && line) {
-        ctx.fillText(line, 50, contentY);
+        ctx.fillText(line, 50, contentCurrentY);
         line = word;
-        contentY += 50;
+        contentCurrentY += Math.round(contentFontSize * 1.3); // Dynamic line height
       } else {
         line = testLine;
       }
     });
-    if (line) ctx.fillText(line, 50, contentY);
+    if (line) ctx.fillText(line, 50, contentCurrentY);
 
     const footerStartY = h - 130;
 
     if (showCodeSection) {
-      const codeBoxY = contentY + 70;
+      const codeBoxY = contentCurrentY + 70;
       const codePadding = 20;
 
       ctx.fillStyle = currentTheme.accent2;
@@ -301,7 +303,7 @@ const PostCreator: React.FC = () => {
     ctx.fillStyle = currentTheme.accent1;
     ctx.font = `${titleFontWeight} 24px Poppins, sans-serif`;
     ctx.textAlign = "center";
-    ctx.fillText(title.toUpperCase(), w / 2, 80);
+    ctx.fillText(title.toUpperCase(), w / 2, titleY);
 
     ctx.fillStyle = currentTheme.text;
     ctx.font = `${contentFontWeight} ${contentFontSize}px Poppins, sans-serif`;
@@ -310,24 +312,24 @@ const PostCreator: React.FC = () => {
     const titleMaxWidth = w - 100;
     const contentWords = content.split(" ");
     let contentLine = "";
-    let contentY = h / 2 - 100;
+    let contentCurrentY = contentY;
 
     contentWords.forEach((word) => {
       const testLine = contentLine + (contentLine ? " " : "") + word;
       const metrics = ctx.measureText(testLine);
 
       if (metrics.width > titleMaxWidth && contentLine) {
-        ctx.fillText(contentLine, w / 2, contentY);
+        ctx.fillText(contentLine, w / 2, contentCurrentY);
         contentLine = word;
-        contentY += 80;
+        contentCurrentY += Math.round(contentFontSize * 1.3); // Dynamic line height
       } else {
         contentLine = testLine;
       }
     });
-    if (contentLine) ctx.fillText(contentLine, w / 2, contentY);
+    if (contentLine) ctx.fillText(contentLine, w / 2, contentCurrentY);
 
     if (showCodeSection) {
-      const codeBoxY = contentY + 70;
+      const codeBoxY = contentCurrentY + 70;
       const codePadding = 20;
 
       ctx.fillStyle = currentTheme.accent2;
@@ -389,7 +391,7 @@ const PostCreator: React.FC = () => {
       titleFontSize * 0.67
     }px Poppins, sans-serif`;
     ctx.textAlign = "left";
-    ctx.fillText(title, boxPadding + 30, 120);
+    ctx.fillText(title, boxPadding + 30, titleY);
 
     ctx.fillStyle = currentTheme.bg;
     ctx.font = `${contentFontWeight} ${contentFontSize}px Poppins, sans-serif`;
@@ -398,24 +400,24 @@ const PostCreator: React.FC = () => {
     const contentMaxWidth = w - 2 * boxPadding - 60;
     const words = content.split(" ");
     let line = "";
-    let contentY = 200;
+    let contentCurrentY = contentY;
 
     words.forEach((word) => {
       const testLine = line + (line ? " " : "") + word;
       const metrics = ctx.measureText(testLine);
 
       if (metrics.width > contentMaxWidth && line) {
-        ctx.fillText(line, boxPadding + 30, contentY);
+        ctx.fillText(line, boxPadding + 30, contentCurrentY);
         line = word;
-        contentY += 45;
+        contentCurrentY += Math.round(contentFontSize * 1.3); // Dynamic line height
       } else {
         line = testLine;
       }
     });
-    if (line) ctx.fillText(line, boxPadding + 30, contentY);
+    if (line) ctx.fillText(line, boxPadding + 30, contentCurrentY);
 
     if (showCodeSection) {
-      const codeBoxY = contentY + 40;
+      const codeBoxY = contentCurrentY + 40;
       ctx.fillStyle = currentTheme.accent1;
       ctx.globalAlpha = 0.1;
       ctx.fillRect(
@@ -493,6 +495,8 @@ const PostCreator: React.FC = () => {
     codeBoxHeight,
     contentFontWeight,
     titleFontWeight,
+    titleY,
+    contentY,
   ]);
 
   const handleDownload = () => {
@@ -604,6 +608,24 @@ const PostCreator: React.FC = () => {
               showCounter={true}
             />
 
+            <SliderControl
+              label="Title Vertical Position"
+              value={titleY}
+              onChange={setTitleY}
+              min={50}
+              max={300}
+              unit="px"
+            />
+
+            <SliderControl
+              label="Content Vertical Position"
+              value={contentY}
+              onChange={setContentY}
+              min={200}
+              max={600}
+              unit="px"
+            />
+
             <ToggleControl
               label="Show Next Arrow"
               isEnabled={showNextArrow}
@@ -644,10 +666,7 @@ const PostCreator: React.FC = () => {
         </div>
 
         <div className="flex-1 lg:flex-none lg:w-2/3">
-          <PostCanvas
-            canvasRef={canvasRef}
-            onDownload={handleDownload}
-          />
+          <PostCanvas canvasRef={canvasRef} onDownload={handleDownload} />
         </div>
       </div>
     </div>
