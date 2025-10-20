@@ -30,6 +30,7 @@ An application for creating stunning, professional Instagram learning content po
 - **Font Weight**: Regular (400), Semi-bold (600), Bold (700), Extra Bold (800)
 - **Vertical Position**: Precise positioning from 200px to 600px
 - **Dynamic Line Height**: Automatically scales (1.3x font size) for optimal readability
+- **Line Breaks Support**: Respects Enter key presses for manual line breaks
 
 #### Footer/Brand
 

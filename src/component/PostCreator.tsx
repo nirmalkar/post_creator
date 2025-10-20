@@ -215,28 +215,43 @@ const PostCreator: React.FC = () => {
     ctx.textAlign = "left";
 
     const contentMaxWidth = w - 100;
-    const words = content.split(" ");
-    let line = "";
+    const lines = content.split("\n");
     let contentCurrentY = contentY;
+    let lastContentY = contentY;
 
-    words.forEach((word) => {
-      const testLine = line + (line ? " " : "") + word;
-      const metrics = ctx.measureText(testLine);
+    lines.forEach((lineContent) => {
+      if (lineContent.trim() === "") {
+        contentCurrentY += Math.round(contentFontSize * 1.3);
+        return;
+      }
 
-      if (metrics.width > contentMaxWidth && line) {
-        ctx.fillText(line, 50, contentCurrentY);
-        line = word;
-        contentCurrentY += Math.round(contentFontSize * 1.3); // Dynamic line height
-      } else {
-        line = testLine;
+      const words = lineContent.split(" ");
+      let currentLine = "";
+
+      words.forEach((word) => {
+        const testLine = currentLine + (currentLine ? " " : "") + word;
+        const metrics = ctx.measureText(testLine);
+
+        if (metrics.width > contentMaxWidth && currentLine) {
+          ctx.fillText(currentLine, 50, contentCurrentY);
+          currentLine = word;
+          contentCurrentY += Math.round(contentFontSize * 1.3);
+        } else {
+          currentLine = testLine;
+        }
+      });
+
+      if (currentLine) {
+        ctx.fillText(currentLine, 50, contentCurrentY);
+        lastContentY = contentCurrentY;
+        contentCurrentY += Math.round(contentFontSize * 1.3);
       }
     });
-    if (line) ctx.fillText(line, 50, contentCurrentY);
 
     const footerStartY = h - 130;
 
     if (showCodeSection) {
-      const codeBoxY = contentCurrentY + 70;
+      const codeBoxY = lastContentY + 70;
       const codePadding = 20;
 
       ctx.fillStyle = currentTheme.accent2;
@@ -310,26 +325,41 @@ const PostCreator: React.FC = () => {
     ctx.textAlign = "center";
 
     const titleMaxWidth = w - 100;
-    const contentWords = content.split(" ");
-    let contentLine = "";
+    const contentLines = content.split("\n");
     let contentCurrentY = contentY;
+    let lastContentY = contentY;
 
-    contentWords.forEach((word) => {
-      const testLine = contentLine + (contentLine ? " " : "") + word;
-      const metrics = ctx.measureText(testLine);
+    contentLines.forEach((lineContent) => {
+      if (lineContent.trim() === "") {
+        contentCurrentY += Math.round(contentFontSize * 1.3);
+        return;
+      }
 
-      if (metrics.width > titleMaxWidth && contentLine) {
+      const contentWords = lineContent.split(" ");
+      let contentLine = "";
+
+      contentWords.forEach((word) => {
+        const testLine = contentLine + (contentLine ? " " : "") + word;
+        const metrics = ctx.measureText(testLine);
+
+        if (metrics.width > titleMaxWidth && contentLine) {
+          ctx.fillText(contentLine, w / 2, contentCurrentY);
+          contentLine = word;
+          contentCurrentY += Math.round(contentFontSize * 1.3);
+        } else {
+          contentLine = testLine;
+        }
+      });
+
+      if (contentLine) {
         ctx.fillText(contentLine, w / 2, contentCurrentY);
-        contentLine = word;
-        contentCurrentY += Math.round(contentFontSize * 1.3); // Dynamic line height
-      } else {
-        contentLine = testLine;
+        lastContentY = contentCurrentY;
+        contentCurrentY += Math.round(contentFontSize * 1.3);
       }
     });
-    if (contentLine) ctx.fillText(contentLine, w / 2, contentCurrentY);
 
     if (showCodeSection) {
-      const codeBoxY = contentCurrentY + 70;
+      const codeBoxY = lastContentY + 70;
       const codePadding = 20;
 
       ctx.fillStyle = currentTheme.accent2;
@@ -398,26 +428,41 @@ const PostCreator: React.FC = () => {
     ctx.textAlign = "left";
 
     const contentMaxWidth = w - 2 * boxPadding - 60;
-    const words = content.split(" ");
-    let line = "";
+    const contentLines = content.split("\n");
     let contentCurrentY = contentY;
+    let lastContentY = contentY;
 
-    words.forEach((word) => {
-      const testLine = line + (line ? " " : "") + word;
-      const metrics = ctx.measureText(testLine);
+    contentLines.forEach((lineContent) => {
+      if (lineContent.trim() === "") {
+        contentCurrentY += Math.round(contentFontSize * 1.3);
+        return;
+      }
 
-      if (metrics.width > contentMaxWidth && line) {
+      const words = lineContent.split(" ");
+      let line = "";
+
+      words.forEach((word) => {
+        const testLine = line + (line ? " " : "") + word;
+        const metrics = ctx.measureText(testLine);
+
+        if (metrics.width > contentMaxWidth && line) {
+          ctx.fillText(line, boxPadding + 30, contentCurrentY);
+          line = word;
+          contentCurrentY += Math.round(contentFontSize * 1.3);
+        } else {
+          line = testLine;
+        }
+      });
+
+      if (line) {
         ctx.fillText(line, boxPadding + 30, contentCurrentY);
-        line = word;
-        contentCurrentY += Math.round(contentFontSize * 1.3); // Dynamic line height
-      } else {
-        line = testLine;
+        lastContentY = contentCurrentY;
+        contentCurrentY += Math.round(contentFontSize * 1.3);
       }
     });
-    if (line) ctx.fillText(line, boxPadding + 30, contentCurrentY);
 
     if (showCodeSection) {
-      const codeBoxY = contentCurrentY + 40;
+      const codeBoxY = lastContentY + 40;
       ctx.fillStyle = currentTheme.accent1;
       ctx.globalAlpha = 0.1;
       ctx.fillRect(
