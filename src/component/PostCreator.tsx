@@ -7,6 +7,10 @@ import InputControl from "./InputControl";
 import SliderControl from "./SliderControl";
 import SelectControl from "./SelectControl";
 import ToggleControl from "./ToggleControl";
+import SavedConfigs from "./SavedConfigs";
+import { useSavedConfigs } from "../context/useSavedConfigs";
+import type { PostConfig } from "../types/config";
+import { Save, FolderOpen } from "lucide-react";
 
 type Theme = {
   bg: string;
@@ -18,6 +22,9 @@ type Theme = {
 
 const PostCreator: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const { saveConfig, savedConfigs } = useSavedConfigs();
+  const [showSaveDialog, setShowSaveDialog] = useState<boolean>(false);
+  const [configName, setConfigName] = useState<string>("");
   const [title, setTitle] = useState<string>("JavaScript");
   const [content, setContent] = useState<string>(
     "Web APIs you probably don't know about"
@@ -39,6 +46,56 @@ const PostCreator: React.FC = () => {
   const [titleFontWeight, setTitleFontWeight] = useState<string>("700");
   const [titleY, setTitleY] = useState<number>(130);
   const [contentY, setContentY] = useState<number>(250);
+
+  const handleSaveConfig = () => {
+    if (!configName.trim()) {
+      alert("Please enter a name for this configuration");
+      return;
+    }
+
+    const configToSave = {
+      name: configName.trim(),
+      title,
+      content,
+      footer,
+      theme,
+      template,
+      titleFontSize,
+      contentFontSize,
+      titleFontWeight,
+      contentFontWeight,
+      titleY,
+      contentY,
+      showNextArrow,
+      showCodeSection,
+      codeBoxHeight,
+      code,
+    };
+
+    saveConfig(configToSave);
+    setShowSaveDialog(false);
+    setConfigName("");
+    alert("Configuration saved successfully!");
+  };
+
+  const handleLoadConfig = (config: PostConfig) => {
+    setTitle(config.title);
+    setContent(config.content);
+    setFooter(config.footer);
+    setTheme(config.theme);
+    setTemplate(config.template);
+    setTitleFontSize(config.titleFontSize);
+    setContentFontSize(config.contentFontSize);
+    setTitleFontWeight(config.titleFontWeight);
+    setContentFontWeight(config.contentFontWeight);
+    setTitleY(config.titleY);
+    setContentY(config.contentY);
+    setShowNextArrow(config.showNextArrow);
+    setShowCodeSection(config.showCodeSection);
+    setCodeBoxHeight(config.codeBoxHeight);
+    setCode(config.code);
+    alert("Configuration loaded successfully!");
+  };
 
   const themes: Record<ThemeName, Theme> = {
     dark: {
@@ -521,6 +578,59 @@ const PostCreator: React.FC = () => {
   };
 
   useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Only trigger if no input/textarea is focused
+      if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
+      if ((event.ctrlKey || event.metaKey) && event.key === 's') {
+        event.preventDefault();
+        setShowSaveDialog(true);
+      }
+
+      if ((event.ctrlKey || event.metaKey) && event.key === 'l') {
+        event.preventDefault();
+        const savedConfigsElement = document.getElementById('saved-configs-section');
+        if (savedConfigsElement) {
+          savedConfigsElement.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+
+      if ((event.ctrlKey || event.metaKey) && event.key === 'e' && savedConfigs.length > 0) {
+        event.preventDefault();
+        // Export all configs
+        try {
+          const exportData = {
+            version: '1.0',
+            exportedAt: new Date().toISOString(),
+            configs: savedConfigs,
+          };
+
+          const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+            type: 'application/json',
+          });
+
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `insta-post-configs-backup-${new Date().toISOString().split('T')[0]}.json`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+        } catch (error) {
+          console.error('Failed to export configs:', error);
+          alert('Failed to export configurations. Please try again.');
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [savedConfigs]);
+
+  useEffect(() => {
     drawCanvas();
     // draw again if fonts load later — small re-draw safeguard
     const timer = setTimeout(() => drawCanvas(), 300);
@@ -557,7 +667,6 @@ const PostCreator: React.FC = () => {
       link.click();
       document.body.removeChild(link);
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error("Download failed:", error);
       alert("Failed to download image. Please try again.");
     }
@@ -574,6 +683,73 @@ const PostCreator: React.FC = () => {
       <div className="flex flex-col lg:flex-row gap-8">
         <div className="flex-1 lg:flex-none lg:w-1/3">
           <div className="space-y-6 max-h-screen overflow-y-auto">
+            {/* Save/Load Controls */}
+            <div className="bg-slate-800 rounded-lg p-4">
+              <h3 className="text-lg font-semibold text-white mb-4">Configuration</h3>
+              <div className="flex space-x-2 mb-4 gap-2">
+                <button
+                  onClick={() => setShowSaveDialog(true)}
+                  className="flex items-center space-x-2 bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded text-sm transition-colors"
+                >
+                  <Save size={16} />
+                  <span>Save Config</span>
+                </button>
+                <button
+                  onClick={() => {
+                    const savedConfigsElement = document.getElementById(
+                      "saved-configs-section"
+                    );
+                    if (savedConfigsElement) {
+                      savedConfigsElement.scrollIntoView({
+                        behavior: "smooth",
+                      });
+                    }
+                  }}
+                  className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-sm transition-colors"
+                >
+                  <FolderOpen size={16} />
+                  <span>Load Config</span>
+                </button>
+              </div>
+
+              {showSaveDialog && (
+                <div className="bg-slate-700 rounded-lg p-4 mb-4">
+                  <h4 className="text-white font-medium mb-2">
+                    Save Configuration
+                  </h4>
+                  <input
+                    type="text"
+                    value={configName}
+                    onChange={(e) => setConfigName(e.target.value)}
+                    placeholder="Enter configuration name"
+                    className="w-full bg-slate-600 text-white px-3 py-2 rounded mb-3 text-sm"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleSaveConfig();
+                      if (e.key === "Escape") setShowSaveDialog(false);
+                    }}
+                    autoFocus
+                  />
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={handleSaveConfig}
+                      className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm"
+                    >
+                      Save
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowSaveDialog(false);
+                        setConfigName("");
+                      }}
+                      className="bg-slate-600 hover:bg-slate-500 text-white px-3 py-1 rounded text-sm"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
             <TemplateSelector
               selectedTemplate={template}
               onTemplateChange={setTemplate}
@@ -712,6 +888,11 @@ const PostCreator: React.FC = () => {
 
         <div className="flex-1 lg:flex-none lg:w-2/3">
           <PostCanvas canvasRef={canvasRef} onDownload={handleDownload} />
+
+          {/* Saved Configurations Section */}
+          <div id="saved-configs-section" className="mt-8">
+            <SavedConfigs onLoadConfig={handleLoadConfig} />
+          </div>
         </div>
       </div>
     </div>
