@@ -686,6 +686,9 @@ const PostCreator: React.FC = () => {
             {/* Save/Load Controls */}
             <div className="bg-slate-800 rounded-lg p-4">
               <h3 className="text-lg font-semibold text-white mb-4">Configuration</h3>
+              <div className="text-xs text-slate-400 mb-3">
+                Keyboard shortcuts: <kbd className="bg-slate-700 px-1 rounded">Ctrl+S</kbd> Save • <kbd className="bg-slate-700 px-1 rounded">Ctrl+L</kbd> Focus configs • <kbd className="bg-slate-700 px-1 rounded">Ctrl+E</kbd> Export all
+              </div>
               <div className="flex space-x-2 mb-4 gap-2">
                 <button
                   onClick={() => setShowSaveDialog(true)}

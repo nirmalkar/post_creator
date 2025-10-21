@@ -50,17 +50,33 @@ An application for creating stunning, professional Instagram learning content po
 - **Decorative Elements**: Template-specific circles and gradients
 - **Responsive Layout**: Optimized for Instagram's 1080x1350 format
 
-### 🛠 **Advanced Features**
+### 💾 **Saved Configurations**
 
-- **Real-time Preview**: Instant canvas updates as you adjust settings
-- **Character Counters**: Built-in limits and counters for all text fields
-- **Export Functionality**: High-quality PNG download
-- **Modular Architecture**: Separate components for each control type
+- **Save Current Settings**: Save your current post configuration with a custom name
+- **One-Click Loading**: Instantly apply any saved configuration to recreate posts
+- **Persistent Storage**: Configurations are saved locally and persist between sessions
+- **Export/Import**: Share configurations between devices or backup your settings
+  - Individual config export as JSON files
+  - Bulk export of all configurations
+  - Import configurations from files (prevents duplicates)
+- **Configuration Management**:
+  - Rename saved configurations inline
+  - Delete unwanted configurations
+  - Copy configuration details to clipboard
+  - Rich metadata display (template, theme, creation date)
+
+### ⌨️ **Keyboard Shortcuts**
+
+- **Ctrl+S**: Quick save current configuration
+- **Ctrl+L**: Jump to saved configurations section
+- **Ctrl+E**: Export all configurations (when configs exist)
+- **Smart Detection**: Shortcuts only work when not typing in input fields
 
 ## 🎛 **User Interface**
 
 ### **Control Panel** (Left Sidebar)
 
+- **Configuration Section**: Save/load controls and keyboard shortcut help
 - Template and theme selectors at the top
 - Title customization controls
 - Content customization controls
@@ -68,11 +84,12 @@ An application for creating stunning, professional Instagram learning content po
 - Visual element toggles
 - Code section controls (when enabled)
 
-### **Canvas Preview** (Right Side)
+### **Saved Configurations Panel** (Below Canvas)
 
-- Real-time 1080x1350 Instagram post preview
-- Instant updates as controls are adjusted
-- High-quality rendering with anti-aliasing
+- Display of all saved configurations
+- Load, export, rename, and delete operations
+- Import configurations from files
+- Rich metadata and preview information
 
 ## 🔧 **Customization Tips**
 
@@ -85,7 +102,7 @@ An application for creating stunning, professional Instagram learning content po
 
 - **Canvas Size**: 1080x1350 pixels (9:16 aspect ratio)
 - **Text Readability**: Tested for mobile viewing
-- **Color Contrast**: High contrast ratios for accessibility
+- **Export Functionality**: High-quality PNG download for individual posts and JSON export for configurations
 - **File Format**: PNG with transparency support
 
 ## 🚀 **Technology Stack**
@@ -100,15 +117,27 @@ An application for creating stunning, professional Instagram learning content po
 
 The app is built with a modular component system:
 
+### **Core Components**
 - `PostCreator.tsx` - Main application component with canvas rendering
+- `PostCanvas.tsx` - Canvas display and download wrapper
+- `AppHeader.tsx` - Application header component
+
+### **Configuration Components**
+- `SavedConfigs.tsx` - Configuration management interface
+- `SavedConfigsContext.tsx` - React context for configuration state management
+- `useSavedConfigs.tsx` - Custom hook for accessing saved configurations
+
+### **Control Components**
 - `TemplateSelector.tsx` - Template selection interface
 - `ThemeSelector.tsx` - Theme selection with visual previews
 - `InputControl.tsx` - Reusable text input with character counting
 - `SliderControl.tsx` - Range sliders for numeric values
 - `SelectControl.tsx` - Dropdown selectors for options
 - `ToggleControl.tsx` - Boolean toggle switches
-- `PostCanvas.tsx` - Canvas display and download wrapper
-- `AppHeader.tsx` - Application header component
+
+### **Utility & Types**
+- `configStorage.ts` - Local storage utilities for configurations
+- `config.ts` - TypeScript type definitions for configurations
 
 ## 🚧 **Development**
 
@@ -132,4 +161,4 @@ This project is open source and available under the MIT License.
 
 ---
 
-_Create stunning Instagram learning content with professional templates, themes, and precise typography controls. Perfect for educators, developers, and content creators who want to make an impact on social media._
+_Create stunning Instagram learning content with professional templates, themes, and precise typography controls. Save, share, and manage your configurations effortlessly with built-in export/import functionality and keyboard shortcuts for maximum productivity._
