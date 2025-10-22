@@ -248,7 +248,7 @@ const PostCreator: React.FC = () => {
     ctx.font = `${titleFontWeight} ${titleFontSize}px Poppins, sans-serif`;
     ctx.textAlign = "left";
 
-    const titleMaxWidth = w - 100;
+    const titleMaxWidth = w - 130;
     const titleWords = title.split(" ");
     let titleLine = "";
     let titleCurrentY = titleY;
@@ -258,20 +258,20 @@ const PostCreator: React.FC = () => {
       const metrics = ctx.measureText(testLine);
 
       if (metrics.width > titleMaxWidth && titleLine) {
-        ctx.fillText(titleLine, 50, titleCurrentY);
+        ctx.fillText(titleLine, 80, titleCurrentY);
         titleLine = word;
         titleCurrentY += 85;
       } else {
         titleLine = testLine;
       }
     });
-    if (titleLine) ctx.fillText(titleLine, 50, titleCurrentY);
+    if (titleLine) ctx.fillText(titleLine, 80, titleCurrentY);
 
     ctx.fillStyle = currentTheme.text;
     ctx.font = `${contentFontWeight} ${contentFontSize}px Poppins, sans-serif`;
     ctx.textAlign = "left";
 
-    const contentMaxWidth = w - 100;
+    const contentMaxWidth = w - 130;
     const lines = content.split("\n");
     let contentCurrentY = contentY;
     let lastContentY = contentY;
@@ -290,7 +290,7 @@ const PostCreator: React.FC = () => {
         const metrics = ctx.measureText(testLine);
 
         if (metrics.width > contentMaxWidth && currentLine) {
-          ctx.fillText(currentLine, 50, contentCurrentY);
+          ctx.fillText(currentLine, 80, contentCurrentY);
           currentLine = word;
           contentCurrentY += Math.round(contentFontSize * 1.3);
         } else {
@@ -299,7 +299,7 @@ const PostCreator: React.FC = () => {
       });
 
       if (currentLine) {
-        ctx.fillText(currentLine, 50, contentCurrentY);
+        ctx.fillText(currentLine, 80, contentCurrentY);
         lastContentY = contentCurrentY;
         contentCurrentY += Math.round(contentFontSize * 1.3);
       }
@@ -313,12 +313,12 @@ const PostCreator: React.FC = () => {
 
       ctx.fillStyle = currentTheme.accent2;
       ctx.globalAlpha = 0.3;
-      ctx.fillRect(50, codeBoxY, w - 100, codeBoxHeight);
+      ctx.fillRect(80, codeBoxY, w - 130, codeBoxHeight);
       ctx.globalAlpha = 1;
 
       ctx.strokeStyle = currentTheme.accent1;
       ctx.lineWidth = 2;
-      ctx.strokeRect(50, codeBoxY, w - 100, codeBoxHeight);
+      ctx.strokeRect(80, codeBoxY, w - 130, codeBoxHeight);
 
       ctx.fillStyle = currentTheme.accent1;
       ctx.font = "bold 22px Poppins, monospace";
@@ -330,10 +330,10 @@ const PostCreator: React.FC = () => {
       codeLines.forEach((codeLine) => {
         if (codeY < codeBoxY + codeBoxHeight - codePadding) {
           let displayLine = codeLine;
-          if (ctx.measureText(displayLine).width > w - 140) {
+          if (ctx.measureText(displayLine).width > w - 170) {
             displayLine = displayLine.substring(0, 40) + "...";
           }
-          ctx.fillText(displayLine, 50 + codePadding, codeY);
+          ctx.fillText(displayLine, 80 + codePadding, codeY);
           codeY += 32;
         }
       });
@@ -342,18 +342,18 @@ const PostCreator: React.FC = () => {
     ctx.strokeStyle = currentTheme.accent1;
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(50, footerStartY);
+    ctx.moveTo(80, footerStartY);
     ctx.lineTo(150, footerStartY);
     ctx.stroke();
 
     ctx.fillStyle = currentTheme.accent1;
     ctx.font = "20px Poppins, sans-serif";
     ctx.textAlign = "left";
-    ctx.fillText(footer, 50, footerStartY + 20);
+    ctx.fillText(footer, 80, footerStartY + 20);
 
     ctx.fillStyle = currentTheme.subText;
     ctx.font = "16px Poppins, sans-serif";
-    ctx.fillText("Tech Tips & Learning Resources", 50, footerStartY + 55);
+    ctx.fillText("Tech Tips & Learning Resources", 80, footerStartY + 55);
 
     drawNextArrow(ctx, w, h, currentTheme);
   };
@@ -375,13 +375,13 @@ const PostCreator: React.FC = () => {
     ctx.fillStyle = currentTheme.accent1;
     ctx.font = `${titleFontWeight} 24px Poppins, sans-serif`;
     ctx.textAlign = "center";
-    ctx.fillText(title.toUpperCase(), w / 2, titleY);
+    ctx.fillText(title.toUpperCase(), w / 2 + 30, titleY);
 
     ctx.fillStyle = currentTheme.text;
     ctx.font = `${contentFontWeight} ${contentFontSize}px Poppins, sans-serif`;
     ctx.textAlign = "center";
 
-    const titleMaxWidth = w - 100;
+    const titleMaxWidth = w - 130;
     const contentLines = content.split("\n");
     let contentCurrentY = contentY;
     let lastContentY = contentY;
@@ -400,7 +400,7 @@ const PostCreator: React.FC = () => {
         const metrics = ctx.measureText(testLine);
 
         if (metrics.width > titleMaxWidth && contentLine) {
-          ctx.fillText(contentLine, w / 2, contentCurrentY);
+          ctx.fillText(contentLine, w / 2 + 30, contentCurrentY);
           contentLine = word;
           contentCurrentY += Math.round(contentFontSize * 1.3);
         } else {
@@ -409,7 +409,7 @@ const PostCreator: React.FC = () => {
       });
 
       if (contentLine) {
-        ctx.fillText(contentLine, w / 2, contentCurrentY);
+        ctx.fillText(contentLine, w / 2 + 30, contentCurrentY);
         lastContentY = contentCurrentY;
         contentCurrentY += Math.round(contentFontSize * 1.3);
       }
@@ -421,7 +421,7 @@ const PostCreator: React.FC = () => {
 
       ctx.fillStyle = currentTheme.accent2;
       ctx.globalAlpha = 0.2;
-      ctx.fillRect((w - (w - 100)) / 2, codeBoxY, w - 100, codeBoxHeight);
+      ctx.fillRect(80, codeBoxY, w - 130, codeBoxHeight);
       ctx.globalAlpha = 1;
 
       ctx.fillStyle = currentTheme.accent1;
@@ -434,10 +434,10 @@ const PostCreator: React.FC = () => {
       codeLines.forEach((codeLine) => {
         if (codeY < codeBoxY + codeBoxHeight - codePadding) {
           let displayLine = codeLine;
-          if (ctx.measureText(displayLine).width > w - 100 - 40) {
+          if (ctx.measureText(displayLine).width > w - 130 - 40) {
             displayLine = displayLine.substring(0, 40) + "...";
           }
-          ctx.fillText(displayLine, (w - (w - 100)) / 2 + 20, codeY);
+          ctx.fillText(displayLine, 80 + 20, codeY);
           codeY += 30;
         }
       });
@@ -446,7 +446,7 @@ const PostCreator: React.FC = () => {
     ctx.fillStyle = currentTheme.accent1;
     ctx.font = "18px Poppins, sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText(footer, w / 2, h - 50);
+    ctx.fillText(footer, w / 2 + 30, h - 50);
 
     drawNextArrow(ctx, w, h, currentTheme);
   };
@@ -478,13 +478,13 @@ const PostCreator: React.FC = () => {
       titleFontSize * 0.67
     }px Poppins, sans-serif`;
     ctx.textAlign = "left";
-    ctx.fillText(title, boxPadding + 30, titleY);
+    ctx.fillText(title, boxPadding + 60, titleY);
 
     ctx.fillStyle = currentTheme.bg;
     ctx.font = `${contentFontWeight} ${contentFontSize}px Poppins, sans-serif`;
     ctx.textAlign = "left";
 
-    const contentMaxWidth = w - 2 * boxPadding - 60;
+    const contentMaxWidth = w - 2 * boxPadding - 120;
     const contentLines = content.split("\n");
     let contentCurrentY = contentY;
     let lastContentY = contentY;
@@ -503,7 +503,7 @@ const PostCreator: React.FC = () => {
         const metrics = ctx.measureText(testLine);
 
         if (metrics.width > contentMaxWidth && line) {
-          ctx.fillText(line, boxPadding + 30, contentCurrentY);
+          ctx.fillText(line, boxPadding + 60, contentCurrentY);
           line = word;
           contentCurrentY += Math.round(contentFontSize * 1.3);
         } else {
@@ -512,7 +512,7 @@ const PostCreator: React.FC = () => {
       });
 
       if (line) {
-        ctx.fillText(line, boxPadding + 30, contentCurrentY);
+        ctx.fillText(line, boxPadding + 60, contentCurrentY);
         lastContentY = contentCurrentY;
         contentCurrentY += Math.round(contentFontSize * 1.3);
       }
@@ -523,9 +523,9 @@ const PostCreator: React.FC = () => {
       ctx.fillStyle = currentTheme.accent1;
       ctx.globalAlpha = 0.1;
       ctx.fillRect(
-        boxPadding + 30,
+        boxPadding + 60,
         codeBoxY,
-        w - 2 * boxPadding - 60,
+        w - 2 * boxPadding - 120,
         codeBoxHeight
       );
       ctx.globalAlpha = 1;
@@ -538,7 +538,7 @@ const PostCreator: React.FC = () => {
 
       codeLines.forEach((codeLine) => {
         if (codeY < codeBoxY + codeBoxHeight - 20) {
-          ctx.fillText(codeLine, boxPadding + 45, codeY);
+          ctx.fillText(codeLine, boxPadding + 75, codeY);
           codeY += 28;
         }
       });
@@ -547,7 +547,7 @@ const PostCreator: React.FC = () => {
     ctx.fillStyle = currentTheme.text;
     ctx.font = "18px Poppins, sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText(footer, w / 2, h - 30);
+    ctx.fillText(footer, w / 2 + 30, h - 30);
 
     drawNextArrow(ctx, w, h, currentTheme);
   };
