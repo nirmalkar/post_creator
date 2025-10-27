@@ -378,7 +378,7 @@ const PostCreator: React.FC = () => {
               value={content}
               onChange={setContent}
               maxLength={500}
-              rows={6}
+              rows={12}
               showCounter={true}
               previewMode={contentPreviewMode}
               onPreviewModeChange={setContentPreviewMode}
@@ -463,7 +463,7 @@ const PostCreator: React.FC = () => {
                 onChange={setCode}
                 maxLength={300}
                 type="textarea"
-                rows={5}
+                rows={8}
                 showCounter={true}
               />
             )}

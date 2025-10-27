@@ -20,15 +20,21 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
   onChange,
   maxLength,
   placeholder,
-  rows = 6,
+  rows = 10,
   showCounter = false,
   previewMode = "split",
   onPreviewModeChange,
 }) => {
   const currentLength = value.length;
 
-  const insertMarkdown = (before: string, after: string = "", placeholder: string = "text") => {
-    const textarea = document.getElementById("markdown-textarea") as HTMLTextAreaElement;
+  const insertMarkdown = (
+    before: string,
+    after: string = "",
+    placeholder: string = "text"
+  ) => {
+    const textarea = document.getElementById(
+      "markdown-textarea"
+    ) as HTMLTextAreaElement;
     if (!textarea) return;
 
     const start = textarea.selectionStart;
@@ -49,7 +55,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
   };
 
   const MarkdownToolbar = () => (
-    <div className="flex flex-wrap gap-1 p-2 bg-slate-700 rounded-t-lg border-b border-slate-600">
+    <div className="flex flex-wrap gap-1 p-2 bg-slate-700 rounded-t-lg border-b border-slate-600 gap-2 mb-2">
       <button
         type="button"
         onClick={() => insertMarkdown("**", "**", "bold text")}
@@ -136,7 +142,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
 
       <div className="flex-1" />
 
-      <div className="flex gap-1">
+      <div className="flex gap-2">
         <button
           type="button"
           onClick={() => onPreviewModeChange?.("edit")}
@@ -182,18 +188,59 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
-          h1: ({ children }) => <h1 className="text-2xl font-bold text-slate-900 mb-2">{children}</h1>,
-          h2: ({ children }) => <h2 className="text-xl font-bold text-slate-900 mb-2">{children}</h2>,
-          h3: ({ children }) => <h3 className="text-lg font-bold text-slate-900 mb-1">{children}</h3>,
-          p: ({ children }) => <p className="text-slate-900 mb-2">{children}</p>,
-          strong: ({ children }) => <strong className="font-bold text-slate-900">{children}</strong>,
-          em: ({ children }) => <em className="italic text-slate-900">{children}</em>,
-          code: ({ children }) => <code className="bg-slate-200 text-slate-900 px-1 py-0.5 rounded text-sm">{children}</code>,
-          pre: ({ children }) => <pre className="bg-slate-800 text-slate-100 p-3 rounded mb-2 overflow-x-auto">{children}</pre>,
-          ul: ({ children }) => <ul className="list-disc list-inside text-slate-900 mb-2">{children}</ul>,
-          ol: ({ children }) => <ol className="list-decimal list-inside text-slate-900 mb-2">{children}</ol>,
+          h1: ({ children }) => (
+            <h1 className="text-2xl font-bold text-slate-900 mb-2">
+              {children}
+            </h1>
+          ),
+          h2: ({ children }) => (
+            <h2 className="text-xl font-bold text-slate-900 mb-2">
+              {children}
+            </h2>
+          ),
+          h3: ({ children }) => (
+            <h3 className="text-lg font-bold text-slate-900 mb-1">
+              {children}
+            </h3>
+          ),
+          p: ({ children }) => (
+            <p className="text-slate-900 mb-2">{children}</p>
+          ),
+          strong: ({ children }) => (
+            <strong className="font-bold text-slate-900">{children}</strong>
+          ),
+          em: ({ children }) => (
+            <em className="italic text-slate-900">{children}</em>
+          ),
+          code: ({ children }) => (
+            <code className="bg-slate-200 text-slate-900 px-1 py-0.5 rounded text-sm">
+              {children}
+            </code>
+          ),
+          pre: ({ children }) => (
+            <pre className="bg-slate-800 text-slate-100 p-3 rounded mb-2 overflow-x-auto">
+              {children}
+            </pre>
+          ),
+          ul: ({ children }) => (
+            <ul className="list-disc list-inside text-slate-900 mb-2">
+              {children}
+            </ul>
+          ),
+          ol: ({ children }) => (
+            <ol className="list-decimal list-inside text-slate-900 mb-2">
+              {children}
+            </ol>
+          ),
           li: ({ children }) => <li className="text-slate-900">{children}</li>,
-          a: ({ children, href }) => <a href={href} className="text-blue-600 hover:text-blue-800 underline">{children}</a>,
+          a: ({ children, href }) => (
+            <a
+              href={href}
+              className="text-blue-600 hover:text-blue-800 underline"
+            >
+              {children}
+            </a>
+          ),
         }}
       >
         {value || "*Preview will appear here*"}
@@ -224,13 +271,14 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
         )}
 
         {previewMode === "preview" && (
-          <div className="rounded-b-lg">
-            {renderPreview()}
-          </div>
+          <div className="rounded-b-lg">{renderPreview()}</div>
         )}
 
         {previewMode === "split" && (
-          <div className="flex rounded-b-lg" style={{ height: `${rows * 1.5}em` }}>
+          <div
+            className="flex rounded-b-lg"
+            style={{ height: `${rows * 1.5}em` }}
+          >
             <div className="flex-1 relative">
               <textarea
                 id="markdown-textarea"
@@ -243,9 +291,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
               />
             </div>
             <div className="w-px bg-slate-600" />
-            <div className="flex-1">
-              {renderPreview()}
-            </div>
+            <div className="flex-1">{renderPreview()}</div>
           </div>
         )}
       </div>
@@ -260,7 +306,9 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
       <div className="px-6 pb-6">
         <div className="text-xs text-slate-400">
           <div className="p-3 bg-slate-700 rounded text-slate-300 font-mono text-xs">
-            <div><strong>Markdown Quick Reference:</strong></div>
+            <div>
+              <strong>Markdown Quick Reference:</strong>
+            </div>
             <div>**bold** *italic* ~~strikethrough~~</div>
             <div>## Headers # Links [text](url)</div>
             <div>- Bullet • 1. Numbered lists</div>
