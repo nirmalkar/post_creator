@@ -8,17 +8,14 @@ import SliderControl from "./SliderControl";
 import SelectControl from "./SelectControl";
 import ToggleControl from "./ToggleControl";
 import SavedConfigs from "./SavedConfigs";
+import MarkdownEditor from "./MarkdownEditor";
 import { useSavedConfigs } from "../context/useSavedConfigs";
 import type { PostConfig } from "../types/config";
 import { Save, FolderOpen } from "lucide-react";
-
-type Theme = {
-  bg: string;
-  accent1: string;
-  accent2: string;
-  text: string;
-  subText: string;
-};
+import { themes } from "../themes";
+import type { Theme } from "./CanvasTemplateEngine";
+import { drawCanvasTemplate } from "./CanvasTemplateEngine";
+import { renderMarkdownOnCanvas } from "./MarkdownRenderer";
 
 const PostCreator: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -27,8 +24,11 @@ const PostCreator: React.FC = () => {
   const [configName, setConfigName] = useState<string>("");
   const [title, setTitle] = useState<string>("JavaScript");
   const [content, setContent] = useState<string>(
-    "Web APIs you probably don't know about"
+    "# Main Title\n\nThis is **bold** and *italic* with `code` formatting.\n\n## Features\n- **Bold text** support\n- *Italic text* support\n- `Code blocks` support\n- Headers and lists"
   );
+  const [contentPreviewMode, setContentPreviewMode] = useState<
+    "split" | "edit" | "preview"
+  >("split");
   const [footer, setFooter] = useState<string>("@YourBrand");
   const [theme, setTheme] = useState<ThemeName>("dark");
   const [showNextArrow, setShowNextArrow] = useState<boolean>(false);
@@ -97,461 +97,6 @@ const PostCreator: React.FC = () => {
     alert("Configuration loaded successfully!");
   };
 
-  const themes: Record<ThemeName, Theme> = {
-    dark: {
-      bg: "#1a1d2e",
-      accent1: "#00BFA6",
-      accent2: "#2d3748",
-      text: "#ffffff",
-      subText: "#cbd5e0",
-    },
-    light: {
-      bg: "#ffffff",
-      accent1: "#00BFA6",
-      accent2: "#e2e8f0",
-      text: "#1a202c",
-      subText: "#4a5568",
-    },
-    teal: {
-      bg: "#00BFA6",
-      accent1: "#ffffff",
-      accent2: "#009688",
-      text: "#ffffff",
-      subText: "#e0f2f1",
-    },
-  };
-
-  const drawDecorativeCircles = (
-    ctx: CanvasRenderingContext2D,
-    w: number,
-    h: number,
-    currentTheme: Theme
-  ) => {
-    ctx.fillStyle = currentTheme.accent1;
-
-    ctx.globalAlpha = 0.12;
-    ctx.beginPath();
-    ctx.arc(w + 300, h + 250, 400, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.globalAlpha = 0.14;
-    ctx.beginPath();
-    ctx.arc(w + 100, -50, 250, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.globalAlpha = 0.12;
-    ctx.beginPath();
-    ctx.arc(w - 50, h - 100, 350, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.globalAlpha = 0.08;
-    ctx.beginPath();
-    ctx.arc(w / 2, h / 2, 300, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.globalAlpha = 0.11;
-    ctx.beginPath();
-    ctx.arc(-80, h / 2, 180, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.globalAlpha = 0.09;
-    ctx.beginPath();
-    ctx.arc(100, h + 150, 150, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.globalAlpha = 1;
-  };
-
-  const drawNextArrow = (
-    ctx: CanvasRenderingContext2D,
-    w: number,
-    h: number,
-    currentTheme: Theme
-  ) => {
-    if (!showNextArrow) return;
-
-    const arrowX = w - 100;
-    const arrowY = h - 100;
-    const arrowSize = 40;
-
-    ctx.fillStyle = currentTheme.accent1;
-    ctx.globalAlpha = 0.3;
-    ctx.beginPath();
-    ctx.arc(arrowX, arrowY, arrowSize + 10, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.strokeStyle = currentTheme.accent1;
-    ctx.lineWidth = 2;
-    ctx.globalAlpha = 0.6;
-    ctx.beginPath();
-    ctx.arc(arrowX, arrowY, arrowSize + 10, 0, Math.PI * 2);
-    ctx.stroke();
-
-    ctx.fillStyle = "#ffffff";
-    ctx.globalAlpha = 0.3;
-    ctx.beginPath();
-    ctx.arc(arrowX - 8, arrowY - 8, 8, 0, Math.PI * 2);
-    ctx.fill();
-
-    let arrowColor = currentTheme.text;
-    if (currentTheme.bg === "#00BFA6") {
-      arrowColor = "#ffffff";
-    } else if (currentTheme.bg === "#ffffff") {
-      arrowColor = "#1a202c";
-    } else {
-      arrowColor = currentTheme.text;
-    }
-
-    ctx.strokeStyle = arrowColor;
-    ctx.lineWidth = 4;
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-    ctx.globalAlpha = 1;
-
-    ctx.beginPath();
-    ctx.moveTo(arrowX - 12, arrowY - 12);
-    ctx.lineTo(arrowX + 12, arrowY);
-    ctx.lineTo(arrowX - 12, arrowY + 12);
-    ctx.stroke();
-
-    ctx.globalAlpha = 1;
-  };
-
-  const drawModernTemplate = (
-    ctx: CanvasRenderingContext2D,
-    w: number,
-    h: number,
-    currentTheme: Theme
-  ) => {
-    ctx.fillStyle = currentTheme.bg;
-    ctx.fillRect(0, 0, w, h);
-
-    const radius = 40;
-    ctx.beginPath();
-    ctx.moveTo(radius, 0);
-    ctx.lineTo(w - radius, 0);
-    ctx.quadraticCurveTo(w, 0, w, radius);
-    ctx.lineTo(w, h - radius);
-    ctx.quadraticCurveTo(w, h, w - radius, h);
-    ctx.lineTo(radius, h);
-    ctx.quadraticCurveTo(0, h, 0, h - radius);
-    ctx.lineTo(0, radius);
-    ctx.quadraticCurveTo(0, 0, radius, 0);
-    ctx.closePath();
-
-    ctx.fillStyle = currentTheme.bg;
-    ctx.fill();
-
-    drawDecorativeCircles(ctx, w, h, currentTheme);
-
-    ctx.fillStyle = currentTheme.text;
-    ctx.font = `${titleFontWeight} ${titleFontSize}px Poppins, sans-serif`;
-    ctx.textAlign = "left";
-
-    const titleMaxWidth = w - 130;
-    const titleWords = title.split(" ");
-    let titleLine = "";
-    let titleCurrentY = titleY;
-
-    titleWords.forEach((word) => {
-      const testLine = titleLine + (titleLine ? " " : "") + word;
-      const metrics = ctx.measureText(testLine);
-
-      if (metrics.width > titleMaxWidth && titleLine) {
-        ctx.fillText(titleLine, 80, titleCurrentY);
-        titleLine = word;
-        titleCurrentY += 85;
-      } else {
-        titleLine = testLine;
-      }
-    });
-    if (titleLine) ctx.fillText(titleLine, 80, titleCurrentY);
-
-    ctx.fillStyle = currentTheme.text;
-    ctx.font = `${contentFontWeight} ${contentFontSize}px Poppins, sans-serif`;
-    ctx.textAlign = "left";
-
-    const contentMaxWidth = w - 130;
-    const lines = content.split("\n");
-    let contentCurrentY = contentY;
-    let lastContentY = contentY;
-
-    lines.forEach((lineContent) => {
-      if (lineContent.trim() === "") {
-        contentCurrentY += Math.round(contentFontSize * 1.3);
-        return;
-      }
-
-      const words = lineContent.split(" ");
-      let currentLine = "";
-
-      words.forEach((word) => {
-        const testLine = currentLine + (currentLine ? " " : "") + word;
-        const metrics = ctx.measureText(testLine);
-
-        if (metrics.width > contentMaxWidth && currentLine) {
-          ctx.fillText(currentLine, 80, contentCurrentY);
-          currentLine = word;
-          contentCurrentY += Math.round(contentFontSize * 1.3);
-        } else {
-          currentLine = testLine;
-        }
-      });
-
-      if (currentLine) {
-        ctx.fillText(currentLine, 80, contentCurrentY);
-        lastContentY = contentCurrentY;
-        contentCurrentY += Math.round(contentFontSize * 1.3);
-      }
-    });
-
-    const footerStartY = h - 130;
-
-    if (showCodeSection) {
-      const codeBoxY = lastContentY + 70;
-      const codePadding = 20;
-
-      ctx.fillStyle = currentTheme.accent2;
-      ctx.globalAlpha = 0.3;
-      ctx.fillRect(80, codeBoxY, w - 130, codeBoxHeight);
-      ctx.globalAlpha = 1;
-
-      ctx.strokeStyle = currentTheme.accent1;
-      ctx.lineWidth = 2;
-      ctx.strokeRect(80, codeBoxY, w - 130, codeBoxHeight);
-
-      ctx.fillStyle = currentTheme.accent1;
-      ctx.font = "bold 22px Poppins, monospace";
-      ctx.textAlign = "left";
-
-      const codeLines = code.split("\n");
-      let codeY = codeBoxY + codePadding + 20;
-
-      codeLines.forEach((codeLine) => {
-        if (codeY < codeBoxY + codeBoxHeight - codePadding) {
-          let displayLine = codeLine;
-          if (ctx.measureText(displayLine).width > w - 170) {
-            displayLine = displayLine.substring(0, 40) + "...";
-          }
-          ctx.fillText(displayLine, 80 + codePadding, codeY);
-          codeY += 32;
-        }
-      });
-    }
-
-    ctx.strokeStyle = currentTheme.accent1;
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(80, footerStartY);
-    ctx.lineTo(150, footerStartY);
-    ctx.stroke();
-
-    ctx.fillStyle = currentTheme.accent1;
-    ctx.font = "20px Poppins, sans-serif";
-    ctx.textAlign = "left";
-    ctx.fillText(footer, 80, footerStartY + 20);
-
-    ctx.fillStyle = currentTheme.subText;
-    ctx.font = "16px Poppins, sans-serif";
-    ctx.fillText("Tech Tips & Learning Resources", 80, footerStartY + 55);
-
-    drawNextArrow(ctx, w, h, currentTheme);
-  };
-
-  const drawMinimalTemplate = (
-    ctx: CanvasRenderingContext2D,
-    w: number,
-    h: number,
-    currentTheme: Theme
-  ) => {
-    ctx.fillStyle = currentTheme.bg;
-    ctx.fillRect(0, 0, w, h);
-
-    drawDecorativeCircles(ctx, w, h, currentTheme);
-
-    ctx.fillStyle = currentTheme.accent1;
-    ctx.fillRect(0, 0, 12, h);
-
-    ctx.fillStyle = currentTheme.accent1;
-    ctx.font = `${titleFontWeight} 24px Poppins, sans-serif`;
-    ctx.textAlign = "center";
-    ctx.fillText(title.toUpperCase(), w / 2 + 30, titleY);
-
-    ctx.fillStyle = currentTheme.text;
-    ctx.font = `${contentFontWeight} ${contentFontSize}px Poppins, sans-serif`;
-    ctx.textAlign = "center";
-
-    const titleMaxWidth = w - 130;
-    const contentLines = content.split("\n");
-    let contentCurrentY = contentY;
-    let lastContentY = contentY;
-
-    contentLines.forEach((lineContent) => {
-      if (lineContent.trim() === "") {
-        contentCurrentY += Math.round(contentFontSize * 1.3);
-        return;
-      }
-
-      const contentWords = lineContent.split(" ");
-      let contentLine = "";
-
-      contentWords.forEach((word) => {
-        const testLine = contentLine + (contentLine ? " " : "") + word;
-        const metrics = ctx.measureText(testLine);
-
-        if (metrics.width > titleMaxWidth && contentLine) {
-          ctx.fillText(contentLine, w / 2 + 30, contentCurrentY);
-          contentLine = word;
-          contentCurrentY += Math.round(contentFontSize * 1.3);
-        } else {
-          contentLine = testLine;
-        }
-      });
-
-      if (contentLine) {
-        ctx.fillText(contentLine, w / 2 + 30, contentCurrentY);
-        lastContentY = contentCurrentY;
-        contentCurrentY += Math.round(contentFontSize * 1.3);
-      }
-    });
-
-    if (showCodeSection) {
-      const codeBoxY = lastContentY + 70;
-      const codePadding = 20;
-
-      ctx.fillStyle = currentTheme.accent2;
-      ctx.globalAlpha = 0.2;
-      ctx.fillRect(80, codeBoxY, w - 130, codeBoxHeight);
-      ctx.globalAlpha = 1;
-
-      ctx.fillStyle = currentTheme.accent1;
-      ctx.font = "bold 20px Poppins, monospace";
-      ctx.textAlign = "left";
-
-      const codeLines = code.split("\n");
-      let codeY = codeBoxY + 25;
-
-      codeLines.forEach((codeLine) => {
-        if (codeY < codeBoxY + codeBoxHeight - codePadding) {
-          let displayLine = codeLine;
-          if (ctx.measureText(displayLine).width > w - 130 - 40) {
-            displayLine = displayLine.substring(0, 40) + "...";
-          }
-          ctx.fillText(displayLine, 80 + 20, codeY);
-          codeY += 30;
-        }
-      });
-    }
-
-    ctx.fillStyle = currentTheme.accent1;
-    ctx.font = "18px Poppins, sans-serif";
-    ctx.textAlign = "center";
-    ctx.fillText(footer, w / 2 + 30, h - 50);
-
-    drawNextArrow(ctx, w, h, currentTheme);
-  };
-
-  const drawGradientTemplate = (
-    ctx: CanvasRenderingContext2D,
-    w: number,
-    h: number,
-    currentTheme: Theme
-  ) => {
-    ctx.fillStyle = currentTheme.bg;
-    ctx.fillRect(0, 0, w, h);
-
-    const gradient = ctx.createLinearGradient(0, 0, w, h);
-    gradient.addColorStop(0, currentTheme.accent1);
-    gradient.addColorStop(1, currentTheme.bg);
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, w, h);
-
-    const boxPadding = 40;
-    const boxHeight = h - 100;
-    ctx.fillStyle = currentTheme.text;
-    ctx.globalAlpha = 0.95;
-    ctx.fillRect(boxPadding, 40, w - 2 * boxPadding, boxHeight);
-    ctx.globalAlpha = 1;
-
-    ctx.fillStyle = currentTheme.accent1;
-    ctx.font = `${titleFontWeight} ${
-      titleFontSize * 0.67
-    }px Poppins, sans-serif`;
-    ctx.textAlign = "left";
-    ctx.fillText(title, boxPadding + 60, titleY);
-
-    ctx.fillStyle = currentTheme.bg;
-    ctx.font = `${contentFontWeight} ${contentFontSize}px Poppins, sans-serif`;
-    ctx.textAlign = "left";
-
-    const contentMaxWidth = w - 2 * boxPadding - 120;
-    const contentLines = content.split("\n");
-    let contentCurrentY = contentY;
-    let lastContentY = contentY;
-
-    contentLines.forEach((lineContent) => {
-      if (lineContent.trim() === "") {
-        contentCurrentY += Math.round(contentFontSize * 1.3);
-        return;
-      }
-
-      const words = lineContent.split(" ");
-      let line = "";
-
-      words.forEach((word) => {
-        const testLine = line + (line ? " " : "") + word;
-        const metrics = ctx.measureText(testLine);
-
-        if (metrics.width > contentMaxWidth && line) {
-          ctx.fillText(line, boxPadding + 60, contentCurrentY);
-          line = word;
-          contentCurrentY += Math.round(contentFontSize * 1.3);
-        } else {
-          line = testLine;
-        }
-      });
-
-      if (line) {
-        ctx.fillText(line, boxPadding + 60, contentCurrentY);
-        lastContentY = contentCurrentY;
-        contentCurrentY += Math.round(contentFontSize * 1.3);
-      }
-    });
-
-    if (showCodeSection) {
-      const codeBoxY = lastContentY + 40;
-      ctx.fillStyle = currentTheme.accent1;
-      ctx.globalAlpha = 0.1;
-      ctx.fillRect(
-        boxPadding + 60,
-        codeBoxY,
-        w - 2 * boxPadding - 120,
-        codeBoxHeight
-      );
-      ctx.globalAlpha = 1;
-
-      ctx.fillStyle = currentTheme.accent1;
-      ctx.font = "bold 18px Poppins, monospace";
-
-      const codeLines = code.split("\n");
-      let codeY = codeBoxY + 25;
-
-      codeLines.forEach((codeLine) => {
-        if (codeY < codeBoxY + codeBoxHeight - 20) {
-          ctx.fillText(codeLine, boxPadding + 75, codeY);
-          codeY += 28;
-        }
-      });
-    }
-
-    ctx.fillStyle = currentTheme.text;
-    ctx.font = "18px Poppins, sans-serif";
-    ctx.textAlign = "center";
-    ctx.fillText(footer, w / 2 + 30, h - 30);
-
-    drawNextArrow(ctx, w, h, currentTheme);
-  };
-
   const drawCanvas = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -568,66 +113,94 @@ const PostCreator: React.FC = () => {
     // Clear first (optional)
     ctx.clearRect(0, 0, w, h);
 
-    if (template === "modern") {
-      drawModernTemplate(ctx, w, h, currentTheme);
-    } else if (template === "minimal") {
-      drawMinimalTemplate(ctx, w, h, currentTheme);
-    } else if (template === "gradient") {
-      drawGradientTemplate(ctx, w, h, currentTheme);
-    }
+    // Use extracted template engine
+    drawCanvasTemplate(
+      ctx,
+      w,
+      h,
+      template,
+      currentTheme,
+      {
+        title,
+        content,
+        footer,
+        showNextArrow,
+        showCodeSection,
+        code,
+        codeBoxHeight,
+        titleFontSize,
+        contentFontSize,
+        titleFontWeight,
+        contentFontWeight,
+        titleY,
+        contentY,
+      },
+      renderMarkdownOnCanvas
+    );
   };
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       // Only trigger if no input/textarea is focused
-      if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
+      if (
+        event.target instanceof HTMLInputElement ||
+        event.target instanceof HTMLTextAreaElement
+      ) {
         return;
       }
 
-      if ((event.ctrlKey || event.metaKey) && event.key === 's') {
+      if ((event.ctrlKey || event.metaKey) && event.key === "s") {
         event.preventDefault();
         setShowSaveDialog(true);
       }
 
-      if ((event.ctrlKey || event.metaKey) && event.key === 'l') {
+      if ((event.ctrlKey || event.metaKey) && event.key === "l") {
         event.preventDefault();
-        const savedConfigsElement = document.getElementById('saved-configs-section');
+        const savedConfigsElement = document.getElementById(
+          "saved-configs-section"
+        );
         if (savedConfigsElement) {
-          savedConfigsElement.scrollIntoView({ behavior: 'smooth' });
+          savedConfigsElement.scrollIntoView({ behavior: "smooth" });
         }
       }
 
-      if ((event.ctrlKey || event.metaKey) && event.key === 'e' && savedConfigs.length > 0) {
+      if (
+        (event.ctrlKey || event.metaKey) &&
+        event.key === "e" &&
+        savedConfigs.length > 0
+      ) {
         event.preventDefault();
         // Export all configs
         try {
           const exportData = {
-            version: '1.0',
+            version: "1.0",
             exportedAt: new Date().toISOString(),
             configs: savedConfigs,
           };
 
           const blob = new Blob([JSON.stringify(exportData, null, 2)], {
-            type: 'application/json',
+            type: "application/json",
           });
 
           const url = URL.createObjectURL(blob);
-          const link = document.createElement('a');
+          const link = document.createElement("a");
           link.href = url;
-          link.download = `insta-post-configs-backup-${new Date().toISOString().split('T')[0]}.json`;
+          link.download = `insta-post-configs-backup-${
+            new Date().toISOString().split("T")[0]
+          }.json`;
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
           URL.revokeObjectURL(url);
         } catch (error) {
-          console.error('Failed to export configs:', error);
-          alert('Failed to export configurations. Please try again.');
+          console.error("Failed to export configs:", error);
+          alert("Failed to export configurations. Please try again.");
         }
       }
     };
 
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, [savedConfigs]);
 
   useEffect(() => {
@@ -685,9 +258,16 @@ const PostCreator: React.FC = () => {
           <div className="space-y-6 max-h-screen overflow-y-auto">
             {/* Save/Load Controls */}
             <div className="bg-slate-800 rounded-lg p-4">
-              <h3 className="text-lg font-semibold text-white mb-4">Configuration</h3>
+              <h3 className="text-lg font-semibold text-white mb-4">
+                Configuration
+              </h3>
               <div className="text-xs text-slate-400 mb-3">
-                Keyboard shortcuts: <kbd className="bg-slate-700 px-1 rounded">Ctrl+S</kbd> Save • <kbd className="bg-slate-700 px-1 rounded">Ctrl+L</kbd> Focus configs • <kbd className="bg-slate-700 px-1 rounded">Ctrl+E</kbd> Export all
+                Keyboard shortcuts:{" "}
+                <kbd className="bg-slate-700 px-1 rounded">Ctrl+S</kbd> Save •{" "}
+                <kbd className="bg-slate-700 px-1 rounded">Ctrl+L</kbd> Focus
+                configs •{" "}
+                <kbd className="bg-slate-700 px-1 rounded">Ctrl+E</kbd> Export
+                all
               </div>
               <div className="flex space-x-2 mb-4 gap-2">
                 <button
@@ -793,14 +373,15 @@ const PostCreator: React.FC = () => {
               ]}
             />
 
-            <InputControl
+            <MarkdownEditor
               label="Main Content"
               value={content}
               onChange={setContent}
               maxLength={500}
-              type="textarea"
               rows={6}
               showCounter={true}
+              previewMode={contentPreviewMode}
+              onPreviewModeChange={setContentPreviewMode}
             />
 
             <SliderControl
