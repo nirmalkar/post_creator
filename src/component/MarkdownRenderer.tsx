@@ -6,12 +6,16 @@ type Theme = {
   subText: string;
 };
 
+export type { Theme };
+
 type TextSegment = {
   text: string;
   isBold: boolean;
   isItalic: boolean;
   isCode: boolean;
 };
+
+export type { TextSegment };
 
 // Parse inline markdown formatting (bold, italic, code)
 export const parseInlineMarkdown = (text: string): TextSegment[] => {
@@ -21,119 +25,131 @@ export const parseInlineMarkdown = (text: string): TextSegment[] => {
     return segments;
   }
 
-  let remaining = text;
+  let currentText = '';
+  let i = 0;
 
-  while (remaining.length > 0) {
-    let matchFound = false;
+  while (i < text.length) {
+    const char = text[i];
 
-    // Check for code (backticks) - highest priority
-    const codeMatch = remaining.match(/^`([^`]+)`/);
-    if (codeMatch) {
-      if (codeMatch.index! > 0) {
+    if (char === '`') {
+      // Handle code blocks
+      if (currentText.length > 0) {
         segments.push({
-          text: remaining.substring(0, codeMatch.index!),
+          text: currentText,
           isBold: false,
           isItalic: false,
           isCode: false,
         });
+        currentText = '';
       }
-      segments.push({
-        text: codeMatch[1],
-        isBold: false,
-        isItalic: false,
-        isCode: true,
-      });
-      remaining = remaining.substring(codeMatch.index! + codeMatch[0].length);
-      matchFound = true;
-      continue;
-    }
 
-    // Check for bold and italic combinations (***text***)
-    const boldItalicMatch = remaining.match(/^\*\*\*(.*?)\*\*\*/);
-    if (boldItalicMatch) {
-      if (boldItalicMatch.index! > 0) {
-        segments.push({
-          text: remaining.substring(0, boldItalicMatch.index!),
-          isBold: false,
-          isItalic: false,
-          isCode: false,
-        });
+      // Find closing backtick
+      let codeContent = '';
+      i++; // Skip opening backtick
+      while (i < text.length && text[i] !== '`') {
+        codeContent += text[i];
+        i++;
       }
-      segments.push({
-        text: boldItalicMatch[1],
-        isBold: true,
-        isItalic: true,
-        isCode: false,
-      });
-      remaining = remaining.substring(
-        boldItalicMatch.index! + boldItalicMatch[0].length
-      );
-      matchFound = true;
-      continue;
-    }
 
-    // Check for bold (**text**)
-    const boldMatch = remaining.match(/^\*\*(.*?)\*\*/);
-    if (boldMatch) {
-      if (boldMatch.index! > 0) {
-        segments.push({
-          text: remaining.substring(0, boldMatch.index!),
-          isBold: false,
-          isItalic: false,
-          isCode: false,
-        });
+      if (i < text.length && text[i] === '`') {
+        i++; // Skip closing backtick
+        if (codeContent.length > 0) {
+          segments.push({
+            text: codeContent,
+            isBold: false,
+            isItalic: false,
+            isCode: true,
+          });
+        }
       }
-      segments.push({
-        text: boldMatch[1],
-        isBold: true,
-        isItalic: false,
-        isCode: false,
-      });
-      remaining = remaining.substring(boldMatch.index! + boldMatch[0].length);
-      matchFound = true;
-      continue;
     }
+    else if (char === '*') {
+      // Handle bold (**text**) or italic (*text*)
+      if (i + 1 < text.length && text[i + 1] === '*') {
+        // Bold formatting
+        if (currentText.length > 0) {
+          segments.push({
+            text: currentText,
+            isBold: false,
+            isItalic: false,
+            isCode: false,
+          });
+          currentText = '';
+        }
 
-    // Check for italic (*text*)
-    const italicMatch = remaining.match(/^\*(.*?)\*/);
-    if (italicMatch) {
-      if (italicMatch.index! > 0) {
-        segments.push({
-          text: remaining.substring(0, italicMatch.index!),
-          isBold: false,
-          isItalic: false,
-          isCode: false,
-        });
+        // Find closing **
+        let boldContent = '';
+        i += 2; // Skip opening **
+        while (i < text.length && !(text[i] === '*' && i + 1 < text.length && text[i + 1] === '*')) {
+          boldContent += text[i];
+          i++;
+        }
+
+        if (i + 1 < text.length && text[i] === '*' && text[i + 1] === '*') {
+          i += 2; // Skip closing **
+          if (boldContent.length > 0) {
+            segments.push({
+              text: boldContent,
+              isBold: true,
+              isItalic: false,
+              isCode: false,
+            });
+          }
+        }
+      } else {
+        // Italic formatting
+        if (currentText.length > 0) {
+          segments.push({
+            text: currentText,
+            isBold: false,
+            isItalic: false,
+            isCode: false,
+          });
+          currentText = '';
+        }
+
+        // Find closing *
+        let italicContent = '';
+        i++; // Skip opening *
+        while (i < text.length && text[i] !== '*') {
+          italicContent += text[i];
+          i++;
+        }
+
+        if (i < text.length && text[i] === '*') {
+          i++; // Skip closing *
+          if (italicContent.length > 0) {
+            segments.push({
+              text: italicContent,
+              isBold: false,
+              isItalic: true,
+              isCode: false,
+            });
+          }
+        }
       }
-      segments.push({
-        text: italicMatch[1],
-        isBold: false,
-        isItalic: true,
-        isCode: false,
-      });
-      remaining = remaining.substring(
-        italicMatch.index! + italicMatch[0].length
-      );
-      matchFound = true;
-      continue;
     }
+    else {
+      // Regular text
+      currentText += char;
+      i++;
+    }
+  }
 
-    // No match found, add remaining text as regular
-    if (!matchFound) {
-      segments.push({
-        text: remaining,
-        isBold: false,
-        isItalic: false,
-        isCode: false,
-      });
-      remaining = "";
-    }
+  // Add any remaining text
+  if (currentText.length > 0) {
+    segments.push({
+      text: currentText,
+      isBold: false,
+      isItalic: false,
+      isCode: false,
+    });
   }
 
   return segments.filter((segment) => segment.text.length > 0);
 };
 
-// Enhanced markdown renderer for canvas with formatting support
+// Render markdown text on canvas with formatting support
 export const renderMarkdownOnCanvas = (
   ctx: CanvasRenderingContext2D,
   markdownText: string,

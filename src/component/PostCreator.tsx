@@ -102,7 +102,6 @@ const PostCreator: React.FC = () => {
     if (!canvas) return;
 
     // Ensure canvas has actual pixel size matching its attributes
-    // (the canvas element has width/height attributes already set in JSX)
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
@@ -110,10 +109,8 @@ const PostCreator: React.FC = () => {
     const h: number = canvas.height;
     const currentTheme: Theme = themes[theme];
 
-    // Clear first (optional)
     ctx.clearRect(0, 0, w, h);
 
-    // Use extracted template engine
     drawCanvasTemplate(
       ctx,
       w,
@@ -170,7 +167,6 @@ const PostCreator: React.FC = () => {
         savedConfigs.length > 0
       ) {
         event.preventDefault();
-        // Export all configs
         try {
           const exportData = {
             version: "1.0",
@@ -205,9 +201,6 @@ const PostCreator: React.FC = () => {
 
   useEffect(() => {
     drawCanvas();
-    // draw again if fonts load later — small re-draw safeguard
-    const timer = setTimeout(() => drawCanvas(), 300);
-    return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     title,
