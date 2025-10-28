@@ -125,7 +125,7 @@ export const drawModernTemplate = (
   w: number,
   h: number,
   currentTheme: Theme,
-  props: Omit<CanvasTemplateEngineProps, 'template' | 'theme'>,
+  props: Omit<CanvasTemplateEngineProps, "template" | "theme">,
   renderMarkdownOnCanvas: (
     ctx: CanvasRenderingContext2D,
     markdownText: string,
@@ -247,7 +247,9 @@ export const drawModernTemplate = (
   ctx.font = "16px Poppins, sans-serif";
   ctx.fillText("Tech Tips & Learning Resources", 80, footerStartY + 55);
 
-  drawNextArrow(ctx, w, h, currentTheme);
+  if (props.showNextArrow) {
+    drawNextArrow(ctx, w, h, currentTheme);
+  }
 };
 
 export const drawMinimalTemplate = (
@@ -255,7 +257,7 @@ export const drawMinimalTemplate = (
   w: number,
   h: number,
   currentTheme: Theme,
-  props: Omit<CanvasTemplateEngineProps, 'template' | 'theme'>,
+  props: Omit<CanvasTemplateEngineProps, "template" | "theme">,
   renderMarkdownOnCanvas: (
     ctx: CanvasRenderingContext2D,
     markdownText: string,
@@ -329,7 +331,9 @@ export const drawMinimalTemplate = (
   ctx.textAlign = "center";
   ctx.fillText(props.footer, w / 2 + 30, h - 50);
 
-  drawNextArrow(ctx, w, h, currentTheme);
+  if (props.showNextArrow) {
+    drawNextArrow(ctx, w, h, currentTheme);
+  }
 };
 
 export const drawGradientTemplate = (
@@ -337,7 +341,7 @@ export const drawGradientTemplate = (
   w: number,
   h: number,
   currentTheme: Theme,
-  props: Omit<CanvasTemplateEngineProps, 'template' | 'theme'>,
+  props: Omit<CanvasTemplateEngineProps, "template" | "theme">,
   renderMarkdownOnCanvas: (
     ctx: CanvasRenderingContext2D,
     markdownText: string,
@@ -419,7 +423,9 @@ export const drawGradientTemplate = (
   ctx.textAlign = "center";
   ctx.fillText(props.footer, w / 2 + 30, h - 30);
 
-  drawNextArrow(ctx, w, h, currentTheme);
+  if (props.showNextArrow) {
+    drawNextArrow(ctx, w, h, currentTheme);
+  }
 };
 
 export const drawCanvasTemplate = (
@@ -428,7 +434,7 @@ export const drawCanvasTemplate = (
   h: number,
   template: TemplateName,
   theme: Theme,
-  props: Omit<CanvasTemplateEngineProps, 'template' | 'theme'>,
+  props: Omit<CanvasTemplateEngineProps, "template" | "theme">,
   renderMarkdownOnCanvas: (
     ctx: CanvasRenderingContext2D,
     markdownText: string,
