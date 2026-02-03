@@ -4,8 +4,8 @@ export interface PostConfig {
   title: string;
   content: string;
   footer: string;
-  theme: 'dark' | 'light' | 'teal';
-  template: 'modern' | 'minimal' | 'gradient';
+  theme: "dark" | "light" | "teal";
+  template: "modern" | "minimal";
   titleFontSize: number;
   contentFontSize: number;
   titleFontWeight: string;
@@ -21,7 +21,7 @@ export interface PostConfig {
 
 export interface SavedConfigsContextType {
   savedConfigs: PostConfig[];
-  saveConfig: (config: Omit<PostConfig, 'id' | 'createdAt'>) => void;
+  saveConfig: (config: Omit<PostConfig, "id" | "createdAt">) => void;
   loadConfig: (configId: string) => PostConfig | null;
   deleteConfig: (configId: string) => void;
   renameConfig: (configId: string, newName: string) => void;

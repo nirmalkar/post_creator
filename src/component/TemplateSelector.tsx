@@ -1,6 +1,6 @@
 import React from "react";
 
-type TemplateType = "modern" | "minimal" | "gradient";
+type TemplateType = "modern" | "minimal";
 
 interface TemplateOption {
   id: TemplateType;
@@ -14,19 +14,16 @@ interface TemplateSelectorProps {
 
 const TemplateSelector: React.FC<TemplateSelectorProps> = ({
   selectedTemplate,
-  onTemplateChange
+  onTemplateChange,
 }) => {
   const templates: TemplateOption[] = [
     { id: "modern", label: "Modern" },
     { id: "minimal", label: "Minimal" },
-    { id: "gradient", label: "Gradient" },
   ];
 
   return (
     <div className="bg-slate-800 rounded-lg p-6 shadow-lg border-2 border-teal-500">
-      <h2 className="text-lg font-bold text-white mb-4">
-        📋 Select Template
-      </h2>
+      <h2 className="text-lg font-bold text-white mb-4">📋 Select Template</h2>
       <div className="space-y-3">
         {templates.map((template) => (
           <button

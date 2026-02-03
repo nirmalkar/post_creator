@@ -6,7 +6,7 @@ export type Theme = {
   subText: string;
 };
 
-export type TemplateName = "modern" | "minimal" | "gradient";
+export type TemplateName = "modern" | "minimal";
 
 interface CanvasTemplateEngineProps {
   template: TemplateName;
@@ -30,7 +30,7 @@ export const drawDecorativeCircles = (
   ctx: CanvasRenderingContext2D,
   w: number,
   h: number,
-  currentTheme: Theme
+  currentTheme: Theme,
 ) => {
   ctx.fillStyle = currentTheme.accent1;
 
@@ -71,7 +71,7 @@ export const drawNextArrow = (
   ctx: CanvasRenderingContext2D,
   w: number,
   h: number,
-  currentTheme: Theme
+  currentTheme: Theme,
 ) => {
   const arrowX = w - 100;
   const arrowY = h - 150;
@@ -134,8 +134,8 @@ export const drawModernTemplate = (
     maxWidth: number,
     baseFontSize: number,
     baseFontWeight: string,
-    currentTheme: Theme
-  ) => number
+    currentTheme: Theme,
+  ) => number,
 ) => {
   ctx.fillStyle = currentTheme.bg;
   ctx.fillRect(0, 0, w, h);
@@ -194,7 +194,7 @@ export const drawModernTemplate = (
     contentMaxWidth,
     props.contentFontSize,
     props.contentFontWeight,
-    currentTheme
+    currentTheme,
   );
 
   const footerStartY = h - 130;
@@ -266,8 +266,8 @@ export const drawMinimalTemplate = (
     maxWidth: number,
     baseFontSize: number,
     baseFontWeight: string,
-    currentTheme: Theme
-  ) => number
+    currentTheme: Theme,
+  ) => number,
 ) => {
   ctx.fillStyle = currentTheme.bg;
   ctx.fillRect(0, 0, w, h);
@@ -295,7 +295,7 @@ export const drawMinimalTemplate = (
     titleMaxWidth,
     props.contentFontSize,
     props.contentFontWeight,
-    currentTheme
+    currentTheme,
   );
 
   if (props.showCodeSection) {
@@ -336,98 +336,6 @@ export const drawMinimalTemplate = (
   }
 };
 
-export const drawGradientTemplate = (
-  ctx: CanvasRenderingContext2D,
-  w: number,
-  h: number,
-  currentTheme: Theme,
-  props: Omit<CanvasTemplateEngineProps, "template" | "theme">,
-  renderMarkdownOnCanvas: (
-    ctx: CanvasRenderingContext2D,
-    markdownText: string,
-    startX: number,
-    startY: number,
-    maxWidth: number,
-    baseFontSize: number,
-    baseFontWeight: string,
-    currentTheme: Theme
-  ) => number
-) => {
-  ctx.fillStyle = currentTheme.bg;
-  ctx.fillRect(0, 0, w, h);
-
-  const gradient = ctx.createLinearGradient(0, 0, w, h);
-  gradient.addColorStop(0, currentTheme.accent1);
-  gradient.addColorStop(1, currentTheme.bg);
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, w, h);
-
-  const boxPadding = 40;
-  const boxHeight = h - 100;
-  ctx.fillStyle = currentTheme.text;
-  ctx.globalAlpha = 0.95;
-  ctx.fillRect(boxPadding, 40, w - 2 * boxPadding, boxHeight);
-  ctx.globalAlpha = 1;
-
-  ctx.fillStyle = currentTheme.accent1;
-  ctx.font = `${props.titleFontWeight} ${
-    props.titleFontSize * 0.67
-  }px Poppins, sans-serif`;
-  ctx.textAlign = "left";
-  ctx.fillText(props.title, boxPadding + 60, props.titleY);
-
-  ctx.fillStyle = currentTheme.bg;
-  ctx.font = `${props.contentFontWeight} ${props.contentFontSize}px Poppins, sans-serif`;
-  ctx.textAlign = "left";
-
-  const contentMaxWidth = w - 2 * boxPadding - 120;
-  const endY = renderMarkdownOnCanvas(
-    ctx,
-    props.content,
-    boxPadding + 60,
-    props.contentY,
-    contentMaxWidth,
-    props.contentFontSize,
-    props.contentFontWeight,
-    currentTheme
-  );
-
-  if (props.showCodeSection) {
-    const codeBoxY = endY + 40;
-    ctx.fillStyle = currentTheme.accent1;
-    ctx.globalAlpha = 0.1;
-    ctx.fillRect(
-      boxPadding + 60,
-      codeBoxY,
-      w - 2 * boxPadding - 120,
-      props.codeBoxHeight
-    );
-    ctx.globalAlpha = 1;
-
-    ctx.fillStyle = currentTheme.accent1;
-    ctx.font = "bold 18px Poppins, monospace";
-
-    const codeLines = props.code.split("\n");
-    let codeY = codeBoxY + 25;
-
-    codeLines.forEach((codeLine) => {
-      if (codeY < codeBoxY + props.codeBoxHeight - 20) {
-        ctx.fillText(codeLine, boxPadding + 75, codeY);
-        codeY += 28;
-      }
-    });
-  }
-
-  ctx.fillStyle = currentTheme.text;
-  ctx.font = "18px Poppins, sans-serif";
-  ctx.textAlign = "center";
-  ctx.fillText(props.footer, w / 2 + 30, h - 30);
-
-  if (props.showNextArrow) {
-    drawNextArrow(ctx, w, h, currentTheme);
-  }
-};
-
 export const drawCanvasTemplate = (
   ctx: CanvasRenderingContext2D,
   w: number,
@@ -443,14 +351,12 @@ export const drawCanvasTemplate = (
     maxWidth: number,
     baseFontSize: number,
     baseFontWeight: string,
-    currentTheme: Theme
-  ) => number
+    currentTheme: Theme,
+  ) => number,
 ) => {
   if (template === "modern") {
     drawModernTemplate(ctx, w, h, theme, props, renderMarkdownOnCanvas);
   } else if (template === "minimal") {
     drawMinimalTemplate(ctx, w, h, theme, props, renderMarkdownOnCanvas);
-  } else if (template === "gradient") {
-    drawGradientTemplate(ctx, w, h, theme, props, renderMarkdownOnCanvas);
   }
 };

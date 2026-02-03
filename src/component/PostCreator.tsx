@@ -24,7 +24,7 @@ const PostCreator: React.FC = () => {
   const [configName, setConfigName] = useState<string>("");
   const [title, setTitle] = useState<string>("JavaScript");
   const [content, setContent] = useState<string>(
-    "# Main Title\n\nThis is **bold** and *italic* with `code` formatting.\n\n## Features\n- **Bold text** support\n- *Italic text* support\n- `Code blocks` support\n- Headers and lists"
+    "# Main Title\n\nThis is **bold** and *italic* with `code` formatting.\n\n## Features\n- **Bold text** support\n- *Italic text* support\n- `Code blocks` support\n- Headers and lists",
   );
   const [contentPreviewMode, setContentPreviewMode] = useState<
     "split" | "edit" | "preview"
@@ -34,11 +34,9 @@ const PostCreator: React.FC = () => {
   const [showNextArrow, setShowNextArrow] = useState<boolean>(false);
   const [showCodeSection, setShowCodeSection] = useState<boolean>(false);
   const [code, setCode] = useState<string>(
-    'const api = fetch("/data")\n  .then(res => res.json())'
+    'const api = fetch("/data")\n  .then(res => res.json())',
   );
-  const [template, setTemplate] = useState<"modern" | "minimal" | "gradient">(
-    "modern"
-  );
+  const [template, setTemplate] = useState<"modern" | "minimal">("modern");
   const [contentFontSize, setContentFontSize] = useState<number>(40);
   const [titleFontSize, setTitleFontSize] = useState<number>(72);
   const [codeBoxHeight, setCodeBoxHeight] = useState<number>(220);
@@ -83,7 +81,13 @@ const PostCreator: React.FC = () => {
     setContent(config.content);
     setFooter(config.footer);
     setTheme(config.theme);
-    setTemplate(config.template);
+    // Handle legacy configs that might have gradient template
+    const templateValue = config.template as string;
+    setTemplate(
+      templateValue === "gradient" || templateValue === "minimal"
+        ? "minimal"
+        : "modern",
+    );
     setTitleFontSize(config.titleFontSize);
     setContentFontSize(config.contentFontSize);
     setTitleFontWeight(config.titleFontWeight);
@@ -132,7 +136,7 @@ const PostCreator: React.FC = () => {
         titleY,
         contentY,
       },
-      renderMarkdownOnCanvas
+      renderMarkdownOnCanvas,
     );
   };
 
@@ -154,7 +158,7 @@ const PostCreator: React.FC = () => {
       if ((event.ctrlKey || event.metaKey) && event.key === "l") {
         event.preventDefault();
         const savedConfigsElement = document.getElementById(
-          "saved-configs-section"
+          "saved-configs-section",
         );
         if (savedConfigsElement) {
           savedConfigsElement.scrollIntoView({ behavior: "smooth" });
@@ -273,7 +277,7 @@ const PostCreator: React.FC = () => {
                 <button
                   onClick={() => {
                     const savedConfigsElement = document.getElementById(
-                      "saved-configs-section"
+                      "saved-configs-section",
                     );
                     if (savedConfigsElement) {
                       savedConfigsElement.scrollIntoView({
