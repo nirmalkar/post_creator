@@ -18,6 +18,7 @@ interface CanvasTemplateEngineProps {
   showCodeSection: boolean;
   code: string;
   codeBoxHeight: number;
+  codeBoxOffset: number;
   titleFontSize: number;
   contentFontSize: number;
   titleFontWeight: string;
@@ -186,6 +187,7 @@ export const drawModernTemplate = (
   ctx.textAlign = "left";
 
   const contentMaxWidth = w - 130;
+
   const endY = renderMarkdownOnCanvas(
     ctx,
     props.content,
@@ -200,7 +202,8 @@ export const drawModernTemplate = (
   const footerStartY = h - 130;
 
   if (props.showCodeSection) {
-    const codeBoxY = endY + 70;
+    const initialCodeBoxY = endY + 70;
+    const codeBoxY = initialCodeBoxY + props.codeBoxOffset;
     const codePadding = 20;
 
     ctx.fillStyle = currentTheme.accent2;
@@ -287,6 +290,7 @@ export const drawMinimalTemplate = (
   ctx.textAlign = "center";
 
   const titleMaxWidth = w - 130;
+
   const endY = renderMarkdownOnCanvas(
     ctx,
     props.content,
@@ -299,7 +303,8 @@ export const drawMinimalTemplate = (
   );
 
   if (props.showCodeSection) {
-    const codeBoxY = endY + 70;
+    const initialCodeBoxY = endY + 70;
+    const codeBoxY = initialCodeBoxY + props.codeBoxOffset;
     const codePadding = 20;
 
     ctx.fillStyle = currentTheme.accent2;

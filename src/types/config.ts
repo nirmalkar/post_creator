@@ -15,6 +15,7 @@ export interface PostConfig {
   showNextArrow: boolean;
   showCodeSection: boolean;
   codeBoxHeight: number;
+  codeBoxOffset: number;
   code: string;
   createdAt?: string;
 }

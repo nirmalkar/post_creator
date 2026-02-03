@@ -44,6 +44,7 @@ const PostCreator: React.FC = () => {
   const [titleFontWeight, setTitleFontWeight] = useState<string>("700");
   const [titleY, setTitleY] = useState<number>(130);
   const [contentY, setContentY] = useState<number>(250);
+  const [codeBoxOffset, setCodeBoxOffset] = useState<number>(0);
 
   const handleSaveConfig = () => {
     if (!configName.trim()) {
@@ -67,6 +68,7 @@ const PostCreator: React.FC = () => {
       showNextArrow,
       showCodeSection,
       codeBoxHeight,
+      codeBoxOffset,
       code,
     };
 
@@ -97,6 +99,7 @@ const PostCreator: React.FC = () => {
     setShowNextArrow(config.showNextArrow);
     setShowCodeSection(config.showCodeSection);
     setCodeBoxHeight(config.codeBoxHeight);
+    setCodeBoxOffset(config.codeBoxOffset ?? 0);
     setCode(config.code);
     alert("Configuration loaded successfully!");
   };
@@ -129,6 +132,7 @@ const PostCreator: React.FC = () => {
         showCodeSection,
         code,
         codeBoxHeight,
+        codeBoxOffset,
         titleFontSize,
         contentFontSize,
         titleFontWeight,
@@ -218,6 +222,7 @@ const PostCreator: React.FC = () => {
     contentFontSize,
     titleFontSize,
     codeBoxHeight,
+    codeBoxOffset,
     contentFontWeight,
     titleFontWeight,
     titleY,
@@ -449,6 +454,17 @@ const PostCreator: React.FC = () => {
                 onChange={setCodeBoxHeight}
                 min={150}
                 max={350}
+                unit="px"
+              />
+            )}
+
+            {showCodeSection && (
+              <SliderControl
+                label="Code Box Position (offset from default)"
+                value={codeBoxOffset}
+                onChange={setCodeBoxOffset}
+                min={-100}
+                max={100}
                 unit="px"
               />
             )}
