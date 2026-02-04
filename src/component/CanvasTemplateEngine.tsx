@@ -272,48 +272,47 @@ export const drawMinimalTemplate = (
     currentTheme: Theme,
   ) => number,
 ) => {
+  // Clean minimal background
   ctx.fillStyle = currentTheme.bg;
   ctx.fillRect(0, 0, w, h);
 
-  drawDecorativeCircles(ctx, w, h, currentTheme);
+  // Minimal left-aligned title
+  ctx.fillStyle = currentTheme.text;
+  ctx.font = `${props.titleFontWeight} ${props.titleFontSize * 0.7}px Poppins, sans-serif`;
+  ctx.textAlign = "left";
+  ctx.fillText(props.title, 60, props.titleY);
 
-  ctx.fillStyle = currentTheme.accent1;
-  ctx.fillRect(0, 0, 12, h);
-
-  ctx.fillStyle = currentTheme.accent1;
-  ctx.font = `${props.titleFontWeight} 24px Poppins, sans-serif`;
-  ctx.textAlign = "center";
-  ctx.fillText(props.title.toUpperCase(), w / 2 + 30, props.titleY);
-
+  // Minimal left-aligned content
   ctx.fillStyle = currentTheme.text;
   ctx.font = `${props.contentFontWeight} ${props.contentFontSize}px Poppins, sans-serif`;
-  ctx.textAlign = "center";
+  ctx.textAlign = "left";
 
-  const titleMaxWidth = w - 130;
+  const contentMaxWidth = w - 120;
 
   const endY = renderMarkdownOnCanvas(
     ctx,
     props.content,
-    w / 2 + 30,
+    60,
     props.contentY,
-    titleMaxWidth,
+    contentMaxWidth,
     props.contentFontSize,
     props.contentFontWeight,
     currentTheme,
   );
 
   if (props.showCodeSection) {
-    const initialCodeBoxY = endY + 70;
+    const initialCodeBoxY = endY + 60;
     const codeBoxY = initialCodeBoxY + props.codeBoxOffset;
-    const codePadding = 20;
+    const codePadding = 15;
 
+    // Minimal code box
     ctx.fillStyle = currentTheme.accent2;
-    ctx.globalAlpha = 0.2;
-    ctx.fillRect(80, codeBoxY, w - 130, props.codeBoxHeight);
+    ctx.globalAlpha = 0.1;
+    ctx.fillRect(60, codeBoxY, w - 120, props.codeBoxHeight);
     ctx.globalAlpha = 1;
 
-    ctx.fillStyle = currentTheme.accent1;
-    ctx.font = "bold 20px Poppins, monospace";
+    ctx.fillStyle = currentTheme.text;
+    ctx.font = "16px Poppins, monospace";
     ctx.textAlign = "left";
 
     const codeLines = props.code.split("\n");
@@ -321,20 +320,17 @@ export const drawMinimalTemplate = (
 
     codeLines.forEach((codeLine) => {
       if (codeY < codeBoxY + props.codeBoxHeight - codePadding) {
-        let displayLine = codeLine;
-        if (ctx.measureText(displayLine).width > w - 130 - 40) {
-          displayLine = displayLine.substring(0, 40) + "...";
-        }
-        ctx.fillText(displayLine, 80 + 20, codeY);
-        codeY += 30;
+        ctx.fillText(codeLine, 75, codeY);
+        codeY += 24;
       }
     });
   }
 
-  ctx.fillStyle = currentTheme.accent1;
-  ctx.font = "18px Poppins, sans-serif";
-  ctx.textAlign = "center";
-  ctx.fillText(props.footer, w / 2 + 30, h - 50);
+  // Minimal footer
+  ctx.fillStyle = currentTheme.subText;
+  ctx.font = "16px Poppins, sans-serif";
+  ctx.textAlign = "left";
+  ctx.fillText(props.footer, 60, h - 50);
 
   if (props.showNextArrow) {
     drawNextArrow(ctx, w, h, currentTheme);
