@@ -26,6 +26,12 @@ const PostCreator: React.FC = () => {
   const [content, setContent] = useState<string>(
     "# Main Title\n\nThis is **bold** and *italic* with `code` formatting.\n\n## Features\n- **Bold text** support\n- *Italic text* support\n- `Code blocks` support\n- Headers and lists",
   );
+  const [techTips, setTechTips] = useState<string>(
+    "💡 **Pro Tip**: Use const instead of let when the variable won't be reassigned.",
+  );
+  const [learningContent, setLearningContent] = useState<string>(
+    "## Key Concepts\n\n- **Variables**: Store data values\n- **Functions**: Reusable blocks of code\n- **Arrays**: Ordered collections of data",
+  );
   const [contentPreviewMode, setContentPreviewMode] = useState<
     "split" | "edit" | "preview"
   >("split");
@@ -56,6 +62,8 @@ const PostCreator: React.FC = () => {
       name: configName.trim(),
       title,
       content,
+      techTips,
+      learningContent,
       footer,
       theme,
       template,
@@ -81,6 +89,8 @@ const PostCreator: React.FC = () => {
   const handleLoadConfig = (config: PostConfig) => {
     setTitle(config.title);
     setContent(config.content);
+    setTechTips(config.techTips ?? "");
+    setLearningContent(config.learningContent ?? "");
     setFooter(config.footer);
     setTheme(config.theme);
     // Handle legacy configs that might have gradient template
@@ -127,6 +137,8 @@ const PostCreator: React.FC = () => {
       {
         title,
         content,
+        techTips,
+        learningContent,
         footer,
         showNextArrow,
         showCodeSection,
@@ -213,6 +225,8 @@ const PostCreator: React.FC = () => {
   }, [
     title,
     content,
+    techTips,
+    learningContent,
     footer,
     theme,
     showNextArrow,
@@ -386,6 +400,28 @@ const PostCreator: React.FC = () => {
               onPreviewModeChange={setContentPreviewMode}
             />
 
+            <MarkdownEditor
+              label="Tech Tips"
+              value={techTips}
+              onChange={setTechTips}
+              maxLength={300}
+              rows={6}
+              showCounter={true}
+              previewMode={contentPreviewMode}
+              onPreviewModeChange={setContentPreviewMode}
+            />
+
+            <MarkdownEditor
+              label="Learning Content"
+              value={learningContent}
+              onChange={setLearningContent}
+              maxLength={400}
+              rows={8}
+              showCounter={true}
+              previewMode={contentPreviewMode}
+              onPreviewModeChange={setContentPreviewMode}
+            />
+
             <SliderControl
               label="Content Font Size"
               value={contentFontSize}
@@ -483,11 +519,11 @@ const PostCreator: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex-1 lg:flex-none lg:w-2/3">
+        <div className="flex-1 lg:flex-none lg:w-2/3 max-h-screen overflow-y-auto">
           <PostCanvas canvasRef={canvasRef} onDownload={handleDownload} />
 
           {/* Saved Configurations Section */}
-          <div id="saved-configs-section" className="mt-8">
+          <div id="saved-configs-section" className="mt-8 pb-8">
             <SavedConfigs onLoadConfig={handleLoadConfig} />
           </div>
         </div>

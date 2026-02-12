@@ -83,15 +83,15 @@ const SavedConfigs: React.FC<SavedConfigsProps> = ({ onLoadConfig }) => {
 
         // Filter out configs that already exist (by name) to avoid duplicates
         const existingNames = new Set(
-          savedConfigs.map((config) => config.name)
+          savedConfigs.map((config) => config.name),
         );
         const newConfigs = configsToImport.filter(
-          (config: PostConfig) => !existingNames.has(config.name)
+          (config: PostConfig) => !existingNames.has(config.name),
         );
 
         if (newConfigs.length === 0) {
           alert(
-            "No new configurations to import. All configurations already exist."
+            "No new configurations to import. All configurations already exist.",
           );
           return;
         }
@@ -100,7 +100,7 @@ const SavedConfigs: React.FC<SavedConfigsProps> = ({ onLoadConfig }) => {
         const updatedConfigs = [...savedConfigs, ...newConfigs];
         localStorage.setItem(
           "insta_post_saved_configs",
-          JSON.stringify(updatedConfigs)
+          JSON.stringify(updatedConfigs),
         );
 
         // Force a re-render by updating the context
@@ -119,7 +119,7 @@ const SavedConfigs: React.FC<SavedConfigsProps> = ({ onLoadConfig }) => {
   const handleDelete = (configId: string) => {
     if (
       window.confirm(
-        "Are you sure you want to delete this saved configuration?"
+        "Are you sure you want to delete this saved configuration?",
       )
     ) {
       deleteConfig(configId);
@@ -169,20 +169,18 @@ const SavedConfigs: React.FC<SavedConfigsProps> = ({ onLoadConfig }) => {
 
   return (
     <div className="bg-slate-800 rounded-lg p-6">
-      <div className="flex items-center justify-between mb-4 gap-2">
-        <h3 className="text-lg font-semibold text-white">
-          Saved Configurations
-        </h3>
-        <div className="flex items-center space-x-2 gap-2">
+      <h3 className="text-lg font-semibold text-white">Saved Configurations</h3>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+        <div className="flex flex-col gap-2">
           <button
             onClick={handleExportAllConfigs}
-            className="flex items-center space-x-1 bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-1 rounded transition-colors"
+            className="flex items-center justify-center gap-1 bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-1.5 rounded transition-colors whitespace-nowrap"
             title="Export all configurations as backup"
           >
             <FileDown size={14} />
             <span>Export All</span>
           </button>
-          <label className="flex items-center space-x-1 bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1 rounded transition-colors cursor-pointer gap-2">
+          <label className="flex items-center justify-center gap-1 bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1.5 rounded transition-colors cursor-pointer whitespace-nowrap">
             <Upload size={14} />
             <span>Import</span>
             <input
@@ -194,7 +192,7 @@ const SavedConfigs: React.FC<SavedConfigsProps> = ({ onLoadConfig }) => {
           </label>
         </div>
       </div>
-      <div className="space-y-3 max-h-96 overflow-y-auto">
+      <div className="space-y-3 max-h-80 overflow-y-auto pr-2">
         {savedConfigs.map((config) => (
           <div
             key={config.id}
@@ -258,10 +256,10 @@ const SavedConfigs: React.FC<SavedConfigsProps> = ({ onLoadConfig }) => {
               {formatDate(config.createdAt!)}
             </div>
 
-            <div className="flex items-center space-x-2 gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <button
                 onClick={() => onLoadConfig(config)}
-                className="flex items-center space-x-1 bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1 rounded transition-colors"
+                className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1.5 rounded transition-colors whitespace-nowrap"
               >
                 <Download size={12} />
                 <span>Load</span>
@@ -269,7 +267,7 @@ const SavedConfigs: React.FC<SavedConfigsProps> = ({ onLoadConfig }) => {
 
               <button
                 onClick={() => handleExportConfig(config)}
-                className="flex items-center space-x-1 bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-1 rounded transition-colors"
+                className="flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-1.5 rounded transition-colors whitespace-nowrap"
                 title="Export this configuration"
               >
                 <FileDown size={12} />
@@ -282,7 +280,7 @@ const SavedConfigs: React.FC<SavedConfigsProps> = ({ onLoadConfig }) => {
                   navigator.clipboard.writeText(configText);
                   // You could add a toast notification here
                 }}
-                className="flex items-center space-x-1 bg-slate-600 hover:bg-slate-500 text-white text-xs px-3 py-1 rounded transition-colors"
+                className="flex items-center gap-1 bg-slate-600 hover:bg-slate-500 text-white text-xs px-3 py-1.5 rounded transition-colors whitespace-nowrap"
                 title="Copy config details"
               >
                 <Copy size={12} />

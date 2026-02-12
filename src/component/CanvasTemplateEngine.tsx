@@ -13,6 +13,8 @@ interface CanvasTemplateEngineProps {
   theme: Theme;
   title: string;
   content: string;
+  techTips: string;
+  learningContent: string;
   footer: string;
   showNextArrow: boolean;
   showCodeSection: boolean;
@@ -199,10 +201,78 @@ export const drawModernTemplate = (
     currentTheme,
   );
 
+  // Tech Tips Section
+  let finalEndY = endY;
+
+  if (props.techTips.trim()) {
+    const techTipsY = endY + 40;
+    ctx.fillStyle = currentTheme.accent1;
+    ctx.font = "bold 18px Poppins, sans-serif";
+    ctx.textAlign = "left";
+    ctx.fillText("💡 Tech Tips", 80, techTipsY);
+
+    ctx.fillStyle = currentTheme.text;
+    ctx.font = `${props.contentFontSize * 0.85}px Poppins, sans-serif`;
+    const techTipsEndY = renderMarkdownOnCanvas(
+      ctx,
+      props.techTips,
+      80,
+      techTipsY + 25,
+      contentMaxWidth,
+      props.contentFontSize * 0.85,
+      props.contentFontWeight,
+      currentTheme,
+    );
+
+    // Learning Content Section
+    if (props.learningContent.trim()) {
+      const learningY = techTipsEndY + 35;
+      ctx.fillStyle = currentTheme.accent2;
+      ctx.font = "bold 18px Poppins, sans-serif";
+      ctx.textAlign = "left";
+      ctx.fillText("📚 Learning Content", 80, learningY);
+
+      ctx.fillStyle = currentTheme.text;
+      ctx.font = `${props.contentFontSize * 0.85}px Poppins, sans-serif`;
+      finalEndY = renderMarkdownOnCanvas(
+        ctx,
+        props.learningContent,
+        80,
+        learningY + 25,
+        contentMaxWidth,
+        props.contentFontSize * 0.85,
+        props.contentFontWeight,
+        currentTheme,
+      );
+    } else {
+      finalEndY = techTipsEndY;
+    }
+  } else if (props.learningContent.trim()) {
+    // Only Learning Content
+    const learningY = endY + 40;
+    ctx.fillStyle = currentTheme.accent2;
+    ctx.font = "bold 18px Poppins, sans-serif";
+    ctx.textAlign = "left";
+    ctx.fillText("📚 Learning Content", 80, learningY);
+
+    ctx.fillStyle = currentTheme.text;
+    ctx.font = `${props.contentFontSize * 0.85}px Poppins, sans-serif`;
+    finalEndY = renderMarkdownOnCanvas(
+      ctx,
+      props.learningContent,
+      80,
+      learningY + 25,
+      contentMaxWidth,
+      props.contentFontSize * 0.85,
+      props.contentFontWeight,
+      currentTheme,
+    );
+  }
+
   const footerStartY = h - 130;
 
   if (props.showCodeSection) {
-    const initialCodeBoxY = endY + 70;
+    const initialCodeBoxY = finalEndY + 70;
     const codeBoxY = initialCodeBoxY + props.codeBoxOffset;
     const codePadding = 20;
 
