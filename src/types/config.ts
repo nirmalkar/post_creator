@@ -3,6 +3,8 @@ export interface PostConfig {
   name: string;
   title: string;
   content: string;
+  techTips: string;
+  learningContent: string;
   footer: string;
   theme: "dark" | "light" | "teal";
   template: "modern" | "minimal";
