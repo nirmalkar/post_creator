@@ -16,6 +16,7 @@ interface CanvasTemplateEngineProps {
   techTips: string;
   learningContent: string;
   footer: string;
+  techTipsLabel: string;
   showNextArrow: boolean;
   showCodeSection: boolean;
   code: string;
@@ -318,7 +319,7 @@ export const drawModernTemplate = (
 
   ctx.fillStyle = currentTheme.subText;
   ctx.font = "16px Poppins, sans-serif";
-  ctx.fillText("Tech Tips & Learning Resources", 80, footerStartY + 55);
+  ctx.fillText(props.techTipsLabel, 80, footerStartY + 55);
 
   if (props.showNextArrow) {
     drawNextArrow(ctx, w, h, currentTheme);

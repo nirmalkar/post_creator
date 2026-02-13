@@ -36,6 +36,9 @@ const PostCreator: React.FC = () => {
     "split" | "edit" | "preview"
   >("split");
   const [footer, setFooter] = useState<string>("@YourBrand");
+  const [techTipsLabel, setTechTipsLabel] = useState<string>(
+    "Tech Tips & Learning Resources",
+  );
   const [theme, setTheme] = useState<ThemeName>("dark");
   const [showNextArrow, setShowNextArrow] = useState<boolean>(false);
   const [showCodeSection, setShowCodeSection] = useState<boolean>(false);
@@ -65,6 +68,7 @@ const PostCreator: React.FC = () => {
       techTips,
       learningContent,
       footer,
+      techTipsLabel,
       theme,
       template,
       titleFontSize,
@@ -92,6 +96,7 @@ const PostCreator: React.FC = () => {
     setTechTips(config.techTips ?? "");
     setLearningContent(config.learningContent ?? "");
     setFooter(config.footer);
+    setTechTipsLabel(config.techTipsLabel ?? "Tech Tips & Learning Resources");
     setTheme(config.theme);
     // Handle legacy configs that might have gradient template
     const templateValue = config.template as string;
@@ -140,6 +145,7 @@ const PostCreator: React.FC = () => {
         techTips,
         learningContent,
         footer,
+        techTipsLabel,
         showNextArrow,
         showCodeSection,
         code,
@@ -228,6 +234,7 @@ const PostCreator: React.FC = () => {
     techTips,
     learningContent,
     footer,
+    techTipsLabel,
     theme,
     showNextArrow,
     showCodeSection,
@@ -448,6 +455,14 @@ const PostCreator: React.FC = () => {
               value={footer}
               onChange={setFooter}
               maxLength={30}
+              showCounter={true}
+            />
+
+            <InputControl
+              label="Tech Tips Section Label"
+              value={techTipsLabel}
+              onChange={setTechTipsLabel}
+              maxLength={50}
               showCounter={true}
             />
 

@@ -5,6 +5,7 @@ export interface PostConfig {
   content: string;
   techTips: string;
   learningContent: string;
+  techTipsLabel: string;
   footer: string;
   theme: "dark" | "light" | "teal";
   template: "modern" | "minimal";
