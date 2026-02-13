@@ -180,16 +180,24 @@ const SavedConfigs: React.FC<SavedConfigsProps> = ({ onLoadConfig }) => {
             <FileDown size={14} />
             <span>Export All</span>
           </button>
-          <label className="flex items-center justify-center gap-1 bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1.5 rounded transition-colors cursor-pointer whitespace-nowrap">
+          <button
+            onClick={() =>
+              (
+                document.querySelector('input[type="file"]') as HTMLInputElement
+              )?.click()
+            }
+            className="flex items-center justify-center gap-1 bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1.5 rounded transition-colors whitespace-nowrap border border-blue-500 shadow-sm hover:shadow-md"
+          >
             <Upload size={14} />
-            <span>Import</span>
-            <input
-              type="file"
-              accept=".json"
-              onChange={handleImportConfigs}
-              className="hidden"
-            />
-          </label>
+            <span>Import Config</span>
+          </button>
+          <input
+            type="file"
+            accept=".json"
+            onChange={handleImportConfigs}
+            className="hidden"
+            style={{ display: "none" }}
+          />
         </div>
       </div>
       <div className="space-y-3 max-h-80 overflow-y-auto pr-2">
